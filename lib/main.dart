@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tripool_app/screens/bottom_bar_screen.dart';
+import 'package:tripool_app/screens/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,10 +22,7 @@ class MyApp extends StatelessWidget {
             iconTheme: IconTheme.of(context).copyWith(
               color: Colors.white,
             )),
-        home: const BottomBarScreen(),
+        home: const Login(),
       );
   }
 }
-
-
- 
