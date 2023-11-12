@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tripool_app/screens/sign_up.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -10,6 +11,6 @@ class ProfileTab extends StatefulWidget {
 class _ProfileTabState extends State<ProfileTab> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SignupWidget();
   }
 }

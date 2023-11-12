@@ -301,6 +301,7 @@ class _SignupWidgetState extends State<SignupWidget> {
                     ),
                     style: Theme.of(context).textTheme.bodyLarge,
                     minLines: 3,
+                    maxLines: 20,
                   ),
                 ),
                 Padding(

@@ -5,23 +5,23 @@ SignupModel createModel(BuildContext context) {
 }
 
 class SignupModel {
-  late TextEditingController? textController1;
-  late FocusNode? textFieldFocusNode1;
+  TextEditingController? textController1;
+  FocusNode? textFieldFocusNode1;
 
-  late TextEditingController? textController2;
-  late FocusNode? textFieldFocusNode2;
+  TextEditingController? textController2;
+  FocusNode? textFieldFocusNode2;
 
-  late TextEditingController? textController3;
-  late FocusNode? textFieldFocusNode3;
+  TextEditingController? textController3;
+  FocusNode? textFieldFocusNode3;
 
-  late TextEditingController? textController4;
-  late FocusNode? textFieldFocusNode4;
+  TextEditingController? textController4;
+  FocusNode? textFieldFocusNode4;
 
-  late TextEditingController? textController5;
-  late FocusNode? textFieldFocusNode5;
+  TextEditingController? textController5;
+  FocusNode? textFieldFocusNode5;
 
-  late TextEditingController? textController6;
-  late FocusNode? textFieldFocusNode6;
+  TextEditingController? textController6;
+  FocusNode? textFieldFocusNode6;
 
   bool passwordVisibility = false;
 
