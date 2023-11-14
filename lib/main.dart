@@ -11,16 +11,16 @@ void main() async {
 
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey: dotenv.env['API_KEY']??'',
-      projectId: dotenv.env['PROJECT_ID']??'',
-      storageBucket: dotenv.env['STORAGE_BUCKET']??'',
-      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']??'',
-      appId: dotenv.env['APP_ID']??'',
-      
+      apiKey:  'AIzaSyCHLxwY3cOr38UTa1KIajqKxBfYClDaMrk',
+      projectId:  'tripool-ea5ee',
+      storageBucket:  'tripool-ea5ee.appspot.com',
+      messagingSenderId:'',
+      appId: '1:362397402376:android:68664deac5ea50062498bd',
     ),
   );
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

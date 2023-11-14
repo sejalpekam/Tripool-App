@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tripool_app/screens/auth_page.dart';
 import 'login_page.dart';
 import 'home_page.dart';
 
@@ -15,7 +16,7 @@ class MainPage extends StatelessWidget{
           if(snapshot.hasData){
             return const HomePage();
           } else {
-            return const LoginPage();
+            return const AuthPage();
           }
         },
       ),
