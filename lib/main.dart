@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
       title: 'Tripool',
       initialRoute: '/',
       debugShowCheckedModeBanner: false,
+
       // theme: ThemeData(
       //     primarySwatch: Colors.purple,
       //     // accentColor: Colors.amber,
@@ -58,6 +59,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
- 
