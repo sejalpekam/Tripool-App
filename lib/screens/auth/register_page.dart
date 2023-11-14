@@ -2,8 +2,8 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
-import "package:tripool_app/screens/auth_page.dart";
-import "package:tripool_app/screens/signUpSuccess_page.dart";
+import 'package:tripool_app/screens/auth/auth_page.dart';
+import 'package:tripool_app/screens/auth/signUpSuccess_page.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;

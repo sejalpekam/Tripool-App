@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
-import "package:tripool_app/screens/login_page.dart";
-import "package:tripool_app/screens/register_page.dart";
+import 'package:tripool_app/screens/auth/login_page.dart';
+import 'package:tripool_app/screens/auth/register_page.dart';
 
 class AuthPage extends StatefulWidget {
   final bool showLoginPageInitially;

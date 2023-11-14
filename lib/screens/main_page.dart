@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tripool_app/screens/auth_page.dart';
-import 'login_page.dart';
+import 'package:tripool_app/screens/auth/auth_page.dart';
+import 'auth/login_page.dart';
 import 'home_page.dart';
 
 class MainPage extends StatelessWidget{
