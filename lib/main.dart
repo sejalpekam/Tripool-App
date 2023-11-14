@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+
 // import 'package:tripool_app/screens/login.dart';
 import 'package:tripool_app/screens/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:tripool_app/screens/main_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'package:tripool_app/screens/bottom_bar_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 void main() async {
   // await dotenv.load();
@@ -31,14 +36,25 @@ class MyApp extends StatelessWidget {
         title: 'Tripool',
         initialRoute: '/',
         debugShowCheckedModeBanner: false,
+        // theme: ThemeData(
+        //     primarySwatch: Colors.purple,
+        //     // accentColor: Colors.amber,
+        //     fontFamily: 'Raleway',
+        //     iconTheme: IconTheme.of(context).copyWith(
+        //       color: Colors.white,
+        //     )),
         theme: ThemeData(
-            primarySwatch: Colors.purple,
-            // accentColor: Colors.amber,
-            fontFamily: 'Raleway',
-            iconTheme: IconTheme.of(context).copyWith(
-              color: Colors.white,
-            )),
-        home: const MainPage(),
+
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          scaffoldBackgroundColor: const Color(0xFFFFFFFF),
+          primaryColor:  Colors.blue,
+          // textTheme: GoogleFonts.muliTextTheme(),
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
+                .copyWith(
+                    secondary: Colors.blueAccent, ),
+        ),
+        home: const BottomBarScreen(),
+
       );
   }
 }

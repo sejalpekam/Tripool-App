@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "362397402376",
+    "firebase_url": "https://tripool-ea5ee-default-rtdb.firebaseio.com",
+    "project_id": "tripool-ea5ee",
+    "storage_bucket": "tripool-ea5ee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362397402376:android:68664deac5ea50062498bd",
+        "android_client_info": {
+          "package_name": "com.example.tripool_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHLxwY3cOr38UTa1KIajqKxBfYClDaMrk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
