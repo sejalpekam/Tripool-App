@@ -24,6 +24,8 @@ class MyApp extends StatelessWidget {
         //     )),
         theme: ThemeData(
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          scaffoldBackgroundColor: const Color(0xFFFFFFFF),
+          primaryColor:  Colors.blue,
           // textTheme: GoogleFonts.muliTextTheme(),
           colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
                 .copyWith(
