@@ -1,23 +1,32 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
+// import 'package:tripool_app/screens/login.dart';
+import 'package:tripool_app/screens/login_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:tripool_app/screens/main_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'package:tripool_app/screens/bottom_bar_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 
 void main() async {
   // await dotenv.load();
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: 'AIzaSyCHLxwY3cOr38UTa1KIajqKxBfYClDaMrk',
-      projectId: 'tripool-ea5ee',
-      storageBucket: 'tripool-ea5ee.appspot.com',
-      messagingSenderId: '',
-      appId: '1:362397402376:android:68664deac5ea50062498bd',
+    options: FirebaseOptions(
+      apiKey:  'apikey',
+      projectId:  'projectId',
+      storageBucket:  'projectId',
+      messagingSenderId:'',
+      appId: 'projectId',
     ),
   );
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -49,3 +58,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+ 
