@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+List<String> categories = <String>[
+  'Entertainment',
+  'Outdoor',
+  'Sports',
+  'Trip',
+  'Meetup',
+  'Other'
+];
+
 class CreateActivityTab extends StatefulWidget {
   const CreateActivityTab({super.key});
 
@@ -14,25 +23,26 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
   String title = '';
   String desc = '';
   String destination = '';
-  int category = 0;
-  Map categories = {
-    0: 'Entertainment',
-    1: 'Outdoor',
-    2: 'Sports',
-    3: 'Trip',
-    4: 'Meetup',
-    5: 'Other'
-  };
 
-  DateTime? fromDateTime;
-  DateTime? fromDate;
-  TimeOfDay? fromTime;
+  String dropdownValue = categories.first;
 
-  DateTime? toDateTime;
-  DateTime? toDate;
-  TimeOfDay? toTime;
+  DateTime? startDateTime;
+  DateTime? startdate;
+  TimeOfDay? starttime;
+  DateTime? endDateTime;
+  DateTime? enddate;
+  TimeOfDay? endtime;
 
-  String getTimeText(TimeOfDay time) {
+  String getDateText(DateTime? date) {
+    if (date == null) {
+      return 'Select Date';
+    } else {
+      return DateFormat('dd/MM/yyyy').format(date!);
+      // return '${date.month}/${date.day}/${date.year}';
+    }
+  }
+
+  String getTimeText(TimeOfDay? time) {
     if (time == null) {
       return 'Select Time';
     } else {
@@ -40,15 +50,6 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       final minutes = time!.minute.toString().padLeft(2, '0');
 
       return '$hours:$minutes';
-    }
-  }
-
-  String getDateText(DateTime date) {
-    if (date == null) {
-      return 'Select Date';
-    } else {
-      return DateFormat('dd/MM/yyyy').format(date!);
-      // return '${date.month}/${date.day}/${date.year}';
     }
   }
 
@@ -72,12 +73,12 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
                   const SizedBox(height: 10),
                   buildDestination(),
                   const SizedBox(height: 10),
-                  // buildCategory(),
-                  // const SizedBox(height: 10),
-                  // buildDate(),
-                  // const SizedBox(height: 10),
-                  // buildTime(),
-                  // const SizedBox(height: 10),
+                  buildCategory(),
+                  const SizedBox(height: 10),
+                  buildStartDate(startdate, starttime),
+                  const SizedBox(height: 10),
+                  buildEndDate(enddate, endtime),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -144,6 +145,108 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
           }
         },
         onSaved: (value) => setState(() => destination = value!),
+      );
+
+  Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Start Date'),
+            TextButton(
+              child: Text(getDateText(date)),
+              onPressed: () async {
+                final initialDate = DateTime.now();
+                final newDate = await showDatePicker(
+                  context: context,
+                  initialDate: date ?? initialDate,
+                  firstDate: DateTime.now().subtract(Duration(days: 0)),
+                  lastDate: DateTime(DateTime.now().year + 1),
+                );
+
+                if (newDate == null) return;
+                if (newDate.isBefore(DateTime.now())) return;
+
+                setState(() => startdate = newDate);
+              },
+            ),
+            Text('Start Time'),
+            TextButton(
+              child: Text(getTimeText(time)),
+              onPressed: () async {
+                final initialTime = TimeOfDay(hour: 16, minute: 0);
+                final newTime = await showTimePicker(
+                  context: context,
+                  initialTime: time ?? initialTime,
+                );
+
+                if (newTime == null) return;
+                setState(() => starttime = newTime);
+              },
+            )
+          ],
+        ),
+      );
+
+  Widget buildEndDate(DateTime? date, TimeOfDay? time) => Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('EndDate'),
+            TextButton(
+              child: Text(getDateText(date)),
+              onPressed: () async {
+                final initialDate = startdate ?? DateTime.now();
+                final newDate = await showDatePicker(
+                  context: context,
+                  initialDate: date ?? initialDate,
+                  firstDate: startdate!,
+                  lastDate: DateTime(DateTime.now().year + 1),
+                );
+
+                if (newDate == null) return;
+                if (newDate.isBefore(DateTime.now())) return;
+
+                setState(() => enddate = newDate);
+              },
+            ),
+            Text('End Time'),
+            TextButton(
+              child: Text(getTimeText(time)),
+              onPressed: () async {
+                final initialTime = TimeOfDay(hour: 16, minute: 0);
+                final newTime = await showTimePicker(
+                  context: context,
+                  initialTime: time ?? initialTime,
+                );
+
+                if (newTime == null) return;
+                setState(() => endtime = newTime);
+              },
+            ),
+          ],
+        ),
+      );
+
+  Widget buildCategory() => DropdownMenu<String>(
+        initialSelection: categories.first,
+        onSelected: (String? value) {
+          // This is called when the user selects an item.
+          setState(() {
+            dropdownValue = value!;
+          });
+        },
+        dropdownMenuEntries:
+            categories.map<DropdownMenuEntry<String>>((String value) {
+          return DropdownMenuEntry<String>(value: value, label: value);
+        }).toList(),
       );
 
   Widget buildResetButton() => Builder(
