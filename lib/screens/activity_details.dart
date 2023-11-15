@@ -50,14 +50,25 @@ class _DetailsPageState extends State<DetailsPage> {
           print(To_Date);
           print(To_Time);
 
-          var actionButtons = [OutlineButton(
-            child: Text('Request Group'),
-            onPressed: () async {
+          var memberListButton = OutlineButton(
+            child: Icon(
+                  Icons.group,
+                  size: 100,
+                ),
+              onPressed: () async {
               final userDoc = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser.id);
               final user = await userDoc.get();
               await userDoc.update({'Requested_Activities': [...user.get('Requested_Activities'), widget.activityId]});
             },
-          )]
+          );
+
+          var actionButtons = [memberListButton, OutlineButton(
+            child: Text('Request Group'),
+            onPressed:  Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
+            );
+          )];
 
   // [
   //                       ElevatedButton(
