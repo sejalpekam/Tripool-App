@@ -39,18 +39,13 @@ class _DetailsPageState extends State<DetailsPage> {
           String Activity_Description = snapshotDoc.get('Activity_Description');
           String Category = snapshotDoc.get('Category');
           String Creator = snapshotDoc.get('Creator');
-          String From_Date = snapshotDoc.get('From_Date');
-          String From_Time = snapshotDoc.get('From_Time');
-          String To_Date = snapshotDoc.get('To_Date');
-          String To_Time = snapshotDoc.get('To_Time');
-          print(Activity_Name);
+          Timestamp From = snapshotDoc.get('From') as Timestamp;
+          Timestamp To = snapshotDoc.get('To') as Timestamp;
+          var Members = snapshotDoc.get('Members') as List<dynamic>;
+          var Requests = snapshotDoc.get('Requests') as List<dynamic>;
           print(Activity_Description);
           print(Category);
           print(Creator);
-          print(From_Date);
-          print(From_Time);
-          print(To_Date);
-          print(To_Time);
 
           var memberListButton = OutlinedButton(
               child: Icon(
@@ -149,26 +144,26 @@ class _DetailsPageState extends State<DetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Title : ' + snapshotDoc.get('sigTitle'),
+                    'Title : ' + Activity_Name,
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),
                   Divider(thickness: 1.5),
                   SizedBox(height: 20),
                   Text(
-                    'Description: ' + snapshotDoc.get('sigDesc'),
+                    'Description: ' + Activity_Description,
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),
                   Divider(thickness: 1.5),
                   SizedBox(height: 20),
                   Text(
-                    'Conducted By: ' + snapshotDoc.get('sigByName'),
+                    'Conducted By: ' + Creator,
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 15),
                   Text(
-                    'Proficiency of Host : ' + snapshotDoc.get('proficiency'),
+                    'Proficiency of Host : ' + 'yo',
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),
@@ -177,41 +172,36 @@ class _DetailsPageState extends State<DetailsPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Date of SIG"),
+                      Text("From"),
                       Text(DateFormat.jms().format(
                           DateTime.fromMillisecondsSinceEpoch(
-                              snapshotDoc.get('sigDateTime').seconds * 1000))),
+                              From.toDate().millisecondsSinceEpoch))),
                     ],
                   ),
                   SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Time of SIG'),
+                      Text('To'),
                       Text(DateFormat.yMMMEd()
                           .format(DateTime.fromMillisecondsSinceEpoch(
-                              snapshotDoc.get('sigDateTime').seconds * 1000))
+                              To.toDate().millisecondsSinceEpoch))
                           .toString()),
                     ],
                   ),
                   SizedBox(height: 20),
                   Divider(thickness: 1.5),
                   SizedBox(height: 20),
-                  Text('Topics : '),
+                  Text('Category : '),
                   Text(
-                    snapshotDoc.get('topics'),
+                    Category,
                     style: TextStyle(fontSize: 16),
                   ),
                   SizedBox(height: 20),
                   Divider(thickness: 1.5),
                   SizedBox(height: 20),
-                  Text('Registered Enthusiasts Count : ' +
-                      snapshotDoc.get('interestedCount').toString()),
-                  Text('Join Now would be activated after : ' +
-                      (snapshotDoc.get('sigCount') -
-                              snapshotDoc.get('interestedCount'))
-                          .toString() +
-                      ' entries'),
+                  Text('Reqs : ' + Requests.toString()),
+                  Text('Mems : ' + Members.toString()),
                   SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
