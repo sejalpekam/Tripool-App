@@ -1,5 +1,5 @@
 class Event {
-  final String title, description, location, startdate, starttime, enddate, endtime, hostId;
+  final String title, description, location, startdate, starttime, enddate, endtime, host;
   final List categoryIds;
 
   Event(
@@ -12,7 +12,7 @@ class Event {
       required this.enddate,
       required this.endtime,
       required this.categoryIds,
-      required this.hostId
+      required this.host
 });
 }
 
@@ -25,7 +25,7 @@ final fiveKmRunEvent = Event(
     starttime: "7:00 AM",
     enddate: "11/17/2023",
     endtime: "12:00 PM",
-    hostId: "Host Name",
+    host: "Host Name",
     categoryIds: [0, 1]);
 
 // final cookingEvent = Event(
