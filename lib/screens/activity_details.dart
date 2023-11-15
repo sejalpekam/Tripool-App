@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
 
 class DetailsPage extends StatefulWidget {
-  const DetailsPage({super.key});
+  final String activityId;
+
+  const DetailsPage({super.key, this.activityId});
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
@@ -12,12 +14,13 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
+    final currUser = FirebaseAuth.instance.currentUser!;
     return Scaffold(
       appBar: AppBar(title: Text('Activity Details')),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('Activity')
-            .doc('pDOWtcT1QrdtWZQjxZ3Q')
+            .doc(widget.activityId)
             .snapshots(),
         builder: (_, snapshot) {
           if (snapshot.data == null ||
