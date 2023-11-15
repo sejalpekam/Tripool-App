@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // import 'package:tripool_app/screens/login.dart';
 import 'package:tripool_app/screens/auth/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:tripool_app/screens/auth/register_page.dart';
 import 'package:tripool_app/screens/main_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
