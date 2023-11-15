@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 // import 'package:tripool_app/screens/login.dart';
+import 'package:tripool_app/screens/faq.dart';
 import 'package:tripool_app/screens/auth/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:tripool_app/screens/main_page.dart';
