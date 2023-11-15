@@ -70,6 +70,19 @@ class _DetailsPageState extends State<DetailsPage> {
             );
           )];
 
+          if (Creator == currUser.id) {
+            actionButtons = [
+              memberListButton,
+              OutlineButton(
+                child: Text('Manage Group'),
+                onPressed:  Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
+                );
+              )
+            ]
+          }
+
   // [
   //                       ElevatedButton(
   //                         child: Text('Join Now'),
