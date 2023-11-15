@@ -54,8 +54,8 @@ class _DetailsPageState extends State<DetailsPage> {
             child: Icon(
                   Icons.group,
                   size: 100,
-                ),
-              onPressed: () async {
+            ),
+            onPressed: () async {
               final userDoc = FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser.id);
               final user = await userDoc.get();
               await userDoc.update({'Requested_Activities': [...user.get('Requested_Activities'), widget.activityId]});
