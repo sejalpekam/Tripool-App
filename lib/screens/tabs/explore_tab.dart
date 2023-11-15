@@ -137,7 +137,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 import 'package:tripool_app/backgrounds/explore_tab_background.dart';
 import 'package:tripool_app/model/category.dart';
 import 'package:tripool_app/model/event.dart';
@@ -147,7 +146,6 @@ import 'package:tripool_app/screens/activity_details.dart';
 import '../../app_state.dart';
 import 'package:tripool_app/widgets/category_widget.dart';
 import 'package:tripool_app/widgets/event_widget.dart';
-
 
 class ExploreTab extends StatelessWidget {
   @override
@@ -161,7 +159,7 @@ class ExploreTab extends StatelessWidget {
               screenHeight: MediaQuery.of(context).size.height,
             ),
             SafeArea(
-              minimum: EdgeInsets.fromLTRB(10, 40,10, 10),
+              minimum: EdgeInsets.fromLTRB(10, 40, 10, 10),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,10 +181,14 @@ class ExploreTab extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 24.0),
                       child: Consumer<AppState>(
-                        builder: (context, appState, _) => SingleChildScrollView(
+                        builder: (context, appState, _) =>
+                            SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                            children: <Widget>[for (final category in categories) CategoryWidget(category: category)],
+                            children: <Widget>[
+                              for (final category in categories)
+                                CategoryWidget(category: category)
+                            ],
                           ),
                         ),
                       ),
@@ -196,12 +198,15 @@ class ExploreTab extends StatelessWidget {
                       child: Consumer<AppState>(
                         builder: (context, appState, _) => Column(
                           children: <Widget>[
-                            for (final event in events.where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
+                            for (final event in events.where((e) => e
+                                .categoryIds
+                                .contains(appState.selectedCategoryId)))
                               GestureDetector(
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => DetailsPage(),
+                                      builder: (context) => DetailsPage(
+                                          activityId: 'cLAurMltckBHzb3WslhZ'),
                                     ),
                                   );
                                 },
