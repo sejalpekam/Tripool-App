@@ -16,7 +16,7 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
-    final currUser = FirebaseAuth.instance.currentUser!;
+    final currUser = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(title: Text('Activity Details')),
       body: StreamBuilder<DocumentSnapshot>(
@@ -70,7 +70,7 @@ class _DetailsPageState extends State<DetailsPage> {
             onPressed: () async {
               final userDoc = FirebaseFirestore.instance
                   .collection('Users')
-                  .doc(currUser.uid);
+                  .doc(currUser!.uid);
               final user = await userDoc.get();
               await userDoc.update({
                 'Requested_Activities': [
@@ -83,20 +83,20 @@ class _DetailsPageState extends State<DetailsPage> {
 
           var actionButtons = [memberListButton, requestJoinButton];
 
-          if (Creator == currUser.uid) {
-            actionButtons = [
-              memberListButton,
-              OutlinedButton(
-                  child: Text('Manage Group'),
-                  onPressed: () {
-                    //TODO: Manage group?
-                    //   Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
-                    // );
-                  }),
-            ];
-          }
+          // if (Creator == currUser.uid) {
+          //   actionButtons = [
+          //     memberListButton,
+          //     OutlinedButton(
+          //         child: Text('Manage Group'),
+          //         onPressed: () {
+          //           //TODO: Manage group?
+          //           //   Navigator.push(
+          //           //   context,
+          //           //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
+          //           // );
+          //         }),
+          //   ];
+          // }
 
           // [
           //                       ElevatedButton(
