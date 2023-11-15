@@ -23,8 +23,11 @@ class _DetailsPageState extends State<DetailsPage> {
             .doc(widget.activityId)
             .snapshots(),
         builder: (_, snapshot) {
-          if (snapshot.data == null ||
-              snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingWidget();
           }
 
