@@ -18,11 +18,12 @@ void main() async {
 
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey:  'apikey',
-      projectId:  'projectId',
-      storageBucket:  'projectId',
+      apiKey:  'AIzaSyCHLxwY3cOr38UTa1KIajqKxBfYClDaMrk',
+      projectId:  'tripool-ea5ee',
+      databaseURL: 'https://tripool-ea5ee-default-rtdb.firebaseio.com',
+      storageBucket:  'tripool-ea5ee.appspot.com',
       messagingSenderId:'',
-      appId: 'projectId',
+      appId: '1:362397402376:android:68664deac5ea50062498bd',
     ),
   );
   runApp(const MyApp());
