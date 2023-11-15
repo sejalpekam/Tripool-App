@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:tripool_app/screens/faq.dart';
 import 'package:tripool_app/screens/auth/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:tripool_app/screens/auth/register_page.dart';
 import 'package:tripool_app/screens/main_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -18,11 +19,12 @@ void main() async {
 
   await Firebase.initializeApp(
     options: FirebaseOptions(
-      apiKey:  'apikey',
-      projectId:  'projectId',
-      storageBucket:  'projectId',
+      apiKey:  'AIzaSyCHLxwY3cOr38UTa1KIajqKxBfYClDaMrk',
+      projectId:  'tripool-ea5ee',
+      databaseURL: 'https://tripool-ea5ee-default-rtdb.firebaseio.com',
+      storageBucket:  'tripool-ea5ee.appspot.com',
       messagingSenderId:'',
-      appId: 'projectId',
+      appId: '1:362397402376:android:68664deac5ea50062498bd',
     ),
   );
   runApp(const MyApp());
