@@ -11,18 +11,18 @@ class MembersPage extends StatefulWidget {
 }
 
 class _MembersPageState extends State<MembersPage> {
-  // Placeholder data for members and requests
-  List<String> members = ['Member 1', 'Member 2', 'Member 3'];
-  List<String> requests = ['Request 1', 'Request 2', 'Request 3'];
+  // Placeholder data for requests
+  List<String> requests = [
+    'Request 1', 'Request 2', 'Request 3', 'Request 4', 'Request 5',
+    'Request 6', 'Request 7', 'Request 8', 'Request 9', 'Request 10'
+  ];
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void printdata(){
-    _firestore.collection('Users').get().then((querySnapshot) {
-      querySnapshot.docs.forEach((result) {
-        print('Age: ${result.data()['Age']}');
-      });
-    });
+  // Fetch user data from Firestore and store it in a list
+  Future<List<Map<String, dynamic>>> fetchUserData() async {
+    QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
+    return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
   }
 
   @override
@@ -51,41 +51,49 @@ class _MembersPageState extends State<MembersPage> {
                     'Requests',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: requests.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      String request = requests[index];
-
-                      return ListTile(
-                        title: Text(request),
-                        subtitle: Row(
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                // Navigate to requested member profile
-                                // Add your navigation logic here
+                  SizedBox(
+                    height: 256, // Set the height as needed
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: requests.map((request) {
+                          return Card(
+                            child: InkWell(
+                              onTap: () {
+                                // Add logic for when a request card is tapped
                               },
-                              child: Text('View Profile'),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(request),
+                                    SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Logic to accept the requested member
+                                          },
+                                          child: Text('Accept'),
+                                        ),
+                                        SizedBox(width: 8),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Logic to reject the requested member
+                                          },
+                                          child: Text('Reject'),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Logic to accept the requested member
-                              },
-                              child: Text('Accept'),
-                            ),
-                            SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Logic to reject the requested member
-                              },
-                              child: Text('Reject'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 16),
                 ],
@@ -96,26 +104,52 @@ class _MembersPageState extends State<MembersPage> {
               'Members',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: members.length,
-              itemBuilder: (BuildContext context, int index) {
-                String member = members[index];
-                bool isAdmin = index == 0; // Assuming the first member is the admin
-            printdata();
-                return ListTile(
-                  title: Container(
-                    width: 15, // Set the width as needed
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Add your logic for the member button
-                      },
-                      child: Text(member),
-                    ),
-                  ),
-                  subtitle: isAdmin ? Text('Admin/Creator') : null,
-                );
-              },
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: FutureBuilder<List<Map<String, dynamic>>>(
+                  future: fetchUserData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      List<Map<String, dynamic>> userData = snapshot.data ?? [];
+
+                      return Column(
+                        children: userData.map((user) {
+                          String memberName = user['Name'];
+                          String memberEmail = user['email'];
+                          int memberAge = user['Age'];
+                          bool isAdmin = user == userData.first;
+
+                          return Card(
+                            child: InkWell(
+                              onTap: () {
+                                // Add logic for when a member card is tapped
+                              },
+                              child: ListTile(
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(memberName),
+                                    SizedBox(height: 8),
+                                    Text(memberEmail),
+                                    SizedBox(height: 8),
+                                    Text('Age: $memberAge'),
+                                  ],
+                                ),
+                                subtitle: isAdmin ? Text('Admin/Creator') : null,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    }
+                  },
+                ),
+              ),
             ),
           ],
         ),
