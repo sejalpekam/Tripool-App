@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
           secondary: Colors.blueAccent,
         ),
       ),
-      home: const BottomBarScreen(),
+      home: const MainPage(),
     );
   }
 }

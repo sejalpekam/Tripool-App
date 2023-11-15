@@ -1,4 +1,4 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +25,7 @@ class ExploreTab extends StatelessWidget {
               screenHeight: MediaQuery.of(context).size.height,
             ),
             SafeArea(
-              minimum: EdgeInsets.fromLTRB(10, 40,10, 10),
+              minimum: EdgeInsets.fromLTRB(10, 40, 10, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -49,7 +49,10 @@ class ExploreTab extends StatelessWidget {
                       builder: (context, appState, _) => SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          children: <Widget>[for (final category in categories) CategoryWidget(category: category)],
+                          children: <Widget>[
+                            for (final category in categories)
+                              CategoryWidget(category: category)
+                          ],
                         ),
                       ),
                     ),

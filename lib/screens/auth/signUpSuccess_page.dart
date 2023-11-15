@@ -24,7 +24,7 @@ class SignUpSuccessPage extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: goToLoginPage,
-              child: Text('Go to Login Page'),
+              child: Text('Go to Home'),
             ),
           ],
         ),
