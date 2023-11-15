@@ -20,16 +20,6 @@ class EventWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.all(
-                Radius.circular(30),
-              ),
-              child: Image.asset(
-                event.imagePath,
-                height: 150,
-                fit: BoxFit.fitWidth,
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.only(top: 8.0, left: 8.0),
               child: Row(
@@ -60,21 +50,48 @@ class EventWidget extends StatelessWidget {
                             ],
                           ),
                         ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        FittedBox(
+                          child: Row(
+                            children: <Widget>[
+                              Icon(Icons.person),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                event.hostId,
+                                style: eventLocationTextStyle.copyWith(fontSize: 15.0),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   Expanded(
-                    flex: 1,
-                    child: Text(
-                      event.duration.toUpperCase(),
-                      textAlign: TextAlign.right,
-                      style: eventLocationTextStyle.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        Text(
+                          event.startdate,
+                          textAlign: TextAlign.right,
+                          style: eventLocationTextStyle.copyWith(fontWeight: FontWeight.w700),
+                          
+                        ),
+                        SizedBox(height: 10,),
+                        Text(
+                          event.starttime,
+                          textAlign: TextAlign.right,
+                          style: eventLocationTextStyle.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
+              
             ),
           ],
         ),

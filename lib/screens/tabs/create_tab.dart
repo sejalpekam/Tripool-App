@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 List<String> categories = <String>[
-  'Entertainment',
+  'Event',
   'Outdoor',
   'Sports',
   'Trip',
@@ -22,7 +22,7 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
 
   String title = '';
   String desc = '';
-  String destination = '';
+  String location = '';
 
   String dropdownValue = categories.first;
 
@@ -71,7 +71,7 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
                   const SizedBox(height: 10),
                   buildDesc(),
                   const SizedBox(height: 10),
-                  buildDestination(),
+                  buildLocation(),
                   const SizedBox(height: 10),
                   buildCategory(),
                   const SizedBox(height: 10),
@@ -131,9 +131,9 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
         onSaved: (value) => setState(() => desc = value!),
       );
 
-  Widget buildDestination() => TextFormField(
+  Widget buildLocation() => TextFormField(
         decoration: const InputDecoration(
-          labelText: 'Activity Destination',
+          labelText: 'Activity location',
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -144,7 +144,23 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
             return null;
           }
         },
-        onSaved: (value) => setState(() => destination = value!),
+        onSaved: (value) => setState(() => location = value!),
+      );
+
+  Widget buildCategory() => DropdownMenu<String>(
+        width: MediaQuery.of(context).size.width * 0.9,
+        hintText: "Select Category",
+        // initialSelection: categories.first,
+        onSelected: (String? value) {
+          // This is called when the user selects an item.
+          setState(() {
+            dropdownValue = value!;
+          });
+        },
+        dropdownMenuEntries:
+            categories.map<DropdownMenuEntry<String>>((String value) {
+          return DropdownMenuEntry<String>(value: value, label: value);
+        }).toList(),
       );
 
   Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(
@@ -233,20 +249,6 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
             ),
           ],
         ),
-      );
-
-  Widget buildCategory() => DropdownMenu<String>(
-        initialSelection: categories.first,
-        onSelected: (String? value) {
-          // This is called when the user selects an item.
-          setState(() {
-            dropdownValue = value!;
-          });
-        },
-        dropdownMenuEntries:
-            categories.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
-        }).toList(),
       );
 
   Widget buildResetButton() => Builder(
