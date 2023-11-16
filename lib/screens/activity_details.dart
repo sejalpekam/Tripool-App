@@ -96,7 +96,7 @@ class _DetailsPageState extends State<DetailsPage> {
             actionButtons = [
               memberListButton,
               OutlinedButton(
-                  child: Text('Manage Group'),
+                  child: Text('Manage Activity'),
                   onPressed: () {
                     Navigator.push(
                       context,
