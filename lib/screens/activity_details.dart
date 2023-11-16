@@ -45,6 +45,7 @@ class _DetailsPageState extends State<DetailsPage> {
           String Creator = snapshotDoc.get('Creator');
           Timestamp From = snapshotDoc.get('From') as Timestamp;
           Timestamp To = snapshotDoc.get('To') as Timestamp;
+          String Destination = snapshotDoc.get('Destination');
           var Members = snapshotDoc.get('Members') as List<dynamic>;
           var Requests = snapshotDoc.get('Requests') as List<dynamic>;
           print(Activity_Description);
@@ -96,11 +97,10 @@ class _DetailsPageState extends State<DetailsPage> {
               OutlinedButton(
                   child: Text('Manage Group'),
                   onPressed: () {
-                    //TODO: Manage group?
-                    //   Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
-                    // );
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const EditActivityTab(widget.activityId)),
+                    );
                   }),
             ];
           }
@@ -127,6 +127,31 @@ class _DetailsPageState extends State<DetailsPage> {
                     });
                   },
                   child: Text('Withdraw Request'))
+            ];
+          }
+
+          if (Members.contains(currUser?.uid)) {
+            actionButtons = [
+              memberListButton,
+              OutlinedButton(
+                  onPressed: () async {
+                    final userDoc = FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc(currUser!.uid);
+                    final user = await userDoc.get();
+                    await userDoc.update({
+                      'Joined_Activities':
+                          (user.get('Joined_Activities') as List<dynamic>)
+                              .where((req) => req != widget.activityId),
+                    });
+                    await FirebaseFirestore.instance
+                        .collection('Activity')
+                        .doc(widget.activityId)
+                        .update({
+                      'Members': (Members).where((req) => req != currUser.uid)
+                    });
+                  },
+                  child: Text('Leave Group'))
             ];
           }
 
@@ -228,6 +253,14 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ],
                   ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainsAxisAlignment.center,
+                    children: [
+                      Icon(Icons.pin, size: 24),
+                      Text(Destination),
+                    ],
+                  );
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(children: [
@@ -250,7 +283,7 @@ class _DetailsPageState extends State<DetailsPage> {
                     ]),
                   ),
                   Divider(thickness: 1.5),
-                  const Text('About',
+                  const Text('About Activity',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                   Padding(
