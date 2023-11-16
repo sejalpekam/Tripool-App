@@ -1,9 +1,17 @@
 class Event {
-  final String title, description, location, startdate, starttime, enddate, endtime, host;
+  final String title,
+      description,
+      location,
+      startdate,
+      starttime,
+      enddate,
+      endtime,
+      host,
+      id;
   final List categoryIds;
 
   Event(
-      {
+      {required this.id,
       required this.title,
       required this.description,
       required this.location,
@@ -12,12 +20,10 @@ class Event {
       required this.enddate,
       required this.endtime,
       required this.categoryIds,
-      required this.host
-});
+      required this.host});
 }
 
 final fiveKmRunEvent = Event(
-    
     title: "5 Kilometer Downtown Run",
     description: "It is a trek",
     location: "Pleasant Park",
@@ -26,6 +32,7 @@ final fiveKmRunEvent = Event(
     enddate: "11/17/2023",
     endtime: "12:00 PM",
     host: "Host Name",
+    id: '5235923grg',
     categoryIds: [0, 1]);
 
 // final cookingEvent = Event(

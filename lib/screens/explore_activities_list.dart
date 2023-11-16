@@ -32,7 +32,7 @@ class _ActivityListState extends State<ActivityList> {
         if (!snapshot.hasData || snapshot.data == null) {
           return Text('No data found');
         }
-        
+
         List<Event> events = snapshot.data!.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           DateTime FromDateTime = data['From'].toDate();
@@ -46,7 +46,7 @@ class _ActivityListState extends State<ActivityList> {
             starttime: DateFormat.jm().format(FromDateTime),
             enddate: DateFormat('dd MMM yyyy').format(ToDateTime),
             endtime: DateFormat.jm().format(ToDateTime),
-
+            id: doc.id,
             categoryIds: [0, 1],
           );
         }).toList();
@@ -62,7 +62,8 @@ class _ActivityListState extends State<ActivityList> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetailsPage(),
+                        builder: (context) =>
+                            DetailsPage(activityId: events[index].id),
                       ),
                     );
                   });
