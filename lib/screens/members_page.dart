@@ -90,41 +90,58 @@ class _MembersPageState extends State<MembersPage> {
                             scrollDirection: Axis.vertical,
                             child: Column(
                               children: requests.map((request) {
-                                return Card(
-                                  child: InkWell(
-                                    onTap: () {
-                                      // Add logic for when a request card is tapped
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(request),
-                                          // Text('${user['Name']}, Age: ${user['Age']}, Rating: ${user['Rating']}'),
+                                return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                  future: _firestore.collection('Users').doc(request).get(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    } else {
+                                      Map<String, dynamic> userData = (snapshot.data as DocumentSnapshot<Map<String, dynamic>>).data() ?? {};
+                                      String userName = userData['Name'];
+                                      int userAge = userData['Age'];
+                                      int userRating = userData['Rating'];
 
-                                          SizedBox(height: 8),
-                                          Row(
-                                            children: [
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  // Logic to accept the requested member
-                                                },
-                                                child: Text('Accept'),
-                                              ),
-                                              SizedBox(width: 8),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  // Logic to reject the requested member
-                                                },
-                                                child: Text('Reject'),
-                                              ),
-                                            ],
+                                      return Card(
+                                        child: InkWell(
+                                          onTap: () {
+                                            // Add logic for when a request card is tapped
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text('Name: $userName'),
+                                                Text('Age: $userAge'),
+                                                Text('Rating: $userRating'),
+
+                                                SizedBox(height: 8),
+                                                Row(
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        // Logic to accept the requested member
+                                                      },
+                                                      child: Text('Accept'),
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        // Logic to reject the requested member
+                                                      },
+                                                      child: Text('Reject'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                 );
                               }).toList(),
                             ),
