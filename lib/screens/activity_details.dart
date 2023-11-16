@@ -263,63 +263,55 @@ class _DetailsPageState extends State<DetailsPage> {
                   );
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(children: [
-                      const Text('Categories',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20)),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: <Widget>[
-                            for (final category in categories.where(
-                                ((category) => category.name == Category)))
-                              CategoryWidget(
-                                category: category,
-                                selectable: false,
-                              )
-                          ],
-                        ),
-                      ),
-                    ]),
+                    child: Row(
+                      children: [
+                        Column(children: [
+                          const Text('Category',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                            CategoryWidget(
+                              category: Category,
+                              selectable: false,
+                            ),
+                        ]),
+                        Column(children: [
+                          const Text('Creator',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                            StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('Users')
+                                .doc(Creator)
+                                .snapshots(),
+                            builder: (_, snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Something went wrong');
+                              }
+
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return LoadingWidget();
+                              }
+
+                              final snapshotDoc = snapshot.data!;
+
+                              String Name = snapshotDoc.get('Name');
+
+                              return OutlinedButton(
+                                      onPressed: () {
+                                        // ON RPESS
+                                      },
+                                      child: Text(Name),
+                                );
+                            }),
+                        ]),
+                      ],
+                    ),
                   ),
                   Divider(thickness: 1.5),
                   const Text('About Activity',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: StreamBuilder<DocumentSnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('Users')
-                            .doc(Creator)
-                            .snapshots(),
-                        builder: (_, snapshot) {
-                          if (snapshot.hasError) {
-                            return Text('Something went wrong');
-                          }
-
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return LoadingWidget();
-                          }
-
-                          final snapshotDoc = snapshot.data!;
-
-                          String Name = snapshotDoc.get('Name');
-
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.person, size: 24),
-                              OutlinedButton(
-                                  onPressed: () {
-                                    // ON RPESS
-                                  },
-                                  child: Text(Name)),
-                            ],
-                          );
-                        }),
-                  ),
                   Text(
                     Activity_Description,
                     style: TextStyle(fontSize: 16),
