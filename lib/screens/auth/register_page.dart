@@ -4,13 +4,14 @@ import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 import 'package:tripool_app/screens/auth/auth_page.dart';
 import 'package:tripool_app/screens/auth/signUpSuccess_page.dart';
+import "package:tripool_app/screens/bottom_bar_screen.dart";
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
   const RegisterPage({
     Key? key,
     required this.showLoginPage,
-  }): super(key: key);
+  }) : super(key: key);
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -26,7 +27,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final _bioController = TextEditingController();
   final _locationController = TextEditingController();
 
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -38,40 +38,39 @@ class _RegisterPageState extends State<RegisterPage> {
     _locationController.dispose();
     super.dispose();
   }
+
   bool _validateFields() {
     // Check if any field is empty
     return _emailController.text.trim().isNotEmpty &&
-           _passwordController.text.trim().isNotEmpty &&
-           _confirmpasswordController.text.trim().isNotEmpty &&
-           _nameController.text.trim().isNotEmpty &&
-           _ageController.text.trim().isNotEmpty &&
-           _bioController.text.trim().isNotEmpty &&
-           _locationController.text.trim().isNotEmpty;
+        _passwordController.text.trim().isNotEmpty &&
+        _confirmpasswordController.text.trim().isNotEmpty &&
+        _nameController.text.trim().isNotEmpty &&
+        _ageController.text.trim().isNotEmpty &&
+        _bioController.text.trim().isNotEmpty &&
+        _locationController.text.trim().isNotEmpty;
   }
-  
+
   Future signUp() async {
     // All fields are filled, proceed with sign-up
-    if(_validateFields()){
-
+    if (_validateFields()) {
       // check same password
-      if(passwordConfirmed()){
+      if (passwordConfirmed()) {
+        // create user
+        UserCredential cred =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
 
-          // create user
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
-
-          // add user details
-          addUserDetails(
-            _emailController.text.trim(),
-            _nameController.text.trim(),
-            int.parse(_ageController.text.trim()),
-            _bioController.text.trim(),
-            _locationController.text.trim(),
-          
-          
-          );
+        // add user details
+        addUserDetails(
+          cred.user!.uid,
+          _emailController.text.trim(),
+          _nameController.text.trim(),
+          int.parse(_ageController.text.trim()),
+          _bioController.text.trim(),
+          _locationController.text.trim(),
+        );
 
         // Navigate to the SignUpSuccessPage without removing AuthPage from stack
         Navigator.push(
@@ -83,21 +82,19 @@ class _RegisterPageState extends State<RegisterPage> {
                 // Optionally, reset AuthPage to show login page by navigating to it
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => AuthPage(showLoginPageInitially: true)),
+                  MaterialPageRoute(builder: (context) => BottomBarScreen()),
                 );
               },
             ),
           ),
         );
-
       }
-
-    }else{
-        // Show dialog if validation fails
-        _showDialog('Please fill out all fields');
-
-      }
+    } else {
+      // Show dialog if validation fails
+      _showDialog('Please fill out all fields');
+    }
   }
+
   // pop up window
   void _showDialog(String message) {
     showDialog(
@@ -119,9 +116,9 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Future addUserDetails(String email, String name, int age, String bio, String location) async{
-    await FirebaseFirestore.instance.collection('Users').add({
-      
+  Future addUserDetails(String id, String email, String name, int age,
+      String bio, String location) async {
+    await FirebaseFirestore.instance.collection('Users').doc(id).set({
       'Name': name,
       'email': email,
       'Location': location,
@@ -131,25 +128,24 @@ class _RegisterPageState extends State<RegisterPage> {
       'Created_Activities': [], // Empty array as default
       'Joined_Activities': [], // Empty array as default
       'Requested_Activities': [] // Empty array as default
-
     });
   }
 
-  bool passwordConfirmed(){
-    if(_passwordController.text.trim() == _confirmpasswordController.text.trim()){
+  bool passwordConfirmed() {
+    if (_passwordController.text.trim() ==
+        _confirmpasswordController.text.trim()) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
-        body: SafeArea(
-         child: Center(
+      backgroundColor: Colors.grey[300],
+      body: SafeArea(
+        child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -160,171 +156,170 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 SizedBox(height: 75),
                 Text(
-                    'Register below with your details!',
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple[900],
-                    ),
+                  'Register below with your details!',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purple[900],
                   ),
+                ),
                 SizedBox(height: 50),
                 // Name
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Name *',
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Name *',
                         ),
                       ),
                     ),
+                  ),
                 ),
                 SizedBox(height: 10),
                 // Age
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          controller: _ageController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Age *',
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: _ageController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Age *',
                         ),
                       ),
                     ),
+                  ),
                 ),
                 SizedBox(height: 10),
                 // email Textfield
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Email *',
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Email *',
                         ),
                       ),
                     ),
+                  ),
                 ),
                 SizedBox(height: 10),
 
                 // Location
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          controller: _locationController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Location *',
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: _locationController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Location *',
                         ),
                       ),
                     ),
+                  ),
                 ),
                 SizedBox(height: 10),
-
 
                 // Bio
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: TextField(
-                          controller: _bioController,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Bio *',
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: _bioController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Bio *',
                         ),
                       ),
                     ),
+                  ),
                 ),
                 SizedBox(height: 10),
 
                 // password textfield
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Password *',
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: TextField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Password *',
-                            ),
-                          ),
-                        ),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
                 // confirm password textfield
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: _confirmpasswordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Confrm Password *',
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: TextField(
-                            controller: _confirmpasswordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Confrm Password *',
-                            ),
-                          ),
-                        ),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -332,24 +327,24 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: GestureDetector(
                     onTap: signUp,
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.purple[900],
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.purple[900],
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
                       ),
+                    ),
                   ),
                 ),
                 SizedBox(height: 25),
@@ -366,7 +361,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     GestureDetector(
                       onTap: widget.showLoginPage,
                       child: Text(
-                        ' Login Now',
+                        'Login Now',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -375,12 +370,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                 ),
-
               ],
             ),
           ),
-         ),
         ),
-      );
+      ),
+    );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 List<String> categories = <String>[
-  'Entertainment',
+  'Event',
   'Outdoor',
   'Sports',
   'Trip',
@@ -103,7 +103,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
 
   String title = '';
   String desc = '';
-  String destination = '';
+  String location = '';
 
   String dropdownValue = categories.first;
 
@@ -152,7 +152,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
                   const SizedBox(height: 10),
                   buildDesc(),
                   const SizedBox(height: 10),
-                  buildDestination(),
+                  buildLocation(),
                   const SizedBox(height: 10),
                   buildCategory(),
                   const SizedBox(height: 10),
@@ -214,21 +214,41 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         onSaved: (value) => setState(() => desc = value!),
       );
 
+
   Widget buildDestination() => TextFormField(
         controller: _activityDestinationController,
-        decoration: const InputDecoration(
-          labelText: 'Activity Destination',
-          border: OutlineInputBorder(),
-        ),
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: (value) {
-          if (value!.length < 4) {
-            return 'Enter at least 4 characters';
-          } else {
-            return null;
-          }
+
+//   Widget buildLocation() => TextFormField(
+
+//         decoration: const InputDecoration(
+//           labelText: 'Activity location',
+//           border: OutlineInputBorder(),
+//         ),
+//         autovalidateMode: AutovalidateMode.onUserInteraction,
+//         validator: (value) {
+//           if (value!.length < 4) {
+//             return 'Enter at least 4 characters';
+//           } else {
+//             return null;
+//           }
+//         },
+//         onSaved: (value) => setState(() => location = value!),
+//       );
+
+  Widget buildCategory() => DropdownMenu<String>(
+        width: MediaQuery.of(context).size.width * 0.9,
+        hintText: "Select Category",
+        // initialSelection: categories.first,
+        onSelected: (String? value) {
+          // This is called when the user selects an item.
+          setState(() {
+            dropdownValue = value!;
+          });
         },
-        onSaved: (value) => setState(() => destination = value!),
+        dropdownMenuEntries:
+            categories.map<DropdownMenuEntry<String>>((String value) {
+          return DropdownMenuEntry<String>(value: value, label: value);
+        }).toList(),
       );
 
   Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(

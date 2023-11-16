@@ -7,18 +7,25 @@ import '../../model/category.dart';
 
 class CategoryWidget extends StatelessWidget {
   final Category category;
+  final bool selectable;
 
-  const CategoryWidget({Key? key, required this.category}) : super(key: key);
+  const CategoryWidget(
+      {Key? key, required this.category, this.selectable = true})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
-    final isSelected = appState.selectedCategoryId == category.categoryId;
+    var isSelected = !selectable;
+    AppState? appState;
+    if (selectable) {
+      appState = Provider.of<AppState>(context);
+      isSelected = appState.selectedCategoryId == category.categoryId;
+    }
 
     return GestureDetector(
       onTap: () {
         if (!isSelected) {
-          appState.updateCategoryId(category.categoryId);
+          appState?.updateCategoryId(category.categoryId);
         }
       },
       child: Container(
@@ -26,7 +33,8 @@ class CategoryWidget extends StatelessWidget {
         width: 90,
         height: 90,
         decoration: BoxDecoration(
-          border: Border.all(color: isSelected ? Colors.white : Color(0x99FFFFFF), width: 3),
+          border: Border.all(
+              color: isSelected ? Colors.white : Color(0x99FFFFFF), width: 3),
           borderRadius: BorderRadius.all(Radius.circular(16)),
           color: isSelected ? Colors.white : Colors.transparent,
         ),
@@ -38,7 +46,9 @@ class CategoryWidget extends StatelessWidget {
               color: isSelected ? Theme.of(context).primaryColor : Colors.white,
               size: 40,
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Text(
               category.name,
               style: isSelected ? selectedCategoryTextStyle : categoryTextStyle,

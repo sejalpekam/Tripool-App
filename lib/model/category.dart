@@ -40,7 +40,7 @@ final sportsCategory = Category(
 );
 
 final otherCategory = Category(
-  categoryId: 4,
+  categoryId: 5,
   name: "Other",
   icon: Icons.circle,
 );
