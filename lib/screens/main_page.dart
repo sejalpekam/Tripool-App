@@ -14,7 +14,7 @@ class MainPage extends StatelessWidget{
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if(snapshot.hasData){
-            return const MembersPage(isCreator: true);
+            return const MembersPage(isCreator: true, activityId:"i1eqO0vSQ8iWHC7Z73Vj",);
           } else {
             return const LoginPage();
           }

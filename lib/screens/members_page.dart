@@ -3,26 +3,48 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MembersPage extends StatefulWidget {
   final bool isCreator;
+  final String activityId;
 
-  const MembersPage({Key? key, required this.isCreator}) : super(key: key);
+  const MembersPage({Key? key, required this.isCreator, required this.activityId}) : super(key: key);
 
   @override
   _MembersPageState createState() => _MembersPageState();
 }
 
 class _MembersPageState extends State<MembersPage> {
-  // Placeholder data for requests
-  List<String> requests = [
-    'Request 1', 'Request 2', 'Request 3', 'Request 4', 'Request 5',
-    'Request 6', 'Request 7', 'Request 8', 'Request 9', 'Request 10'
-  ];
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Fetch user data from Firestore and store it in a list
-  Future<List<Map<String, dynamic>>> fetchUserData() async {
-    QuerySnapshot querySnapshot = await _firestore.collection('Users').get();
+  // Placeholder data for requests
+  List<String> requests = [];
+  int membersCount = 0;
+
+  // Fetch activity data from Firestore and store it in a map
+  Future<Map<String, dynamic>> fetchActivityData() async {
+    DocumentSnapshot activitySnapshot =
+        await _firestore.collection('Activity').doc(widget.activityId).get();
+    return activitySnapshot.data() as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchMembersData(List<String> memberIds) async {
+    QuerySnapshot querySnapshot =
+        await _firestore.collection('Users').where(FieldPath.documentId, whereIn: memberIds).get();
     return querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  }
+
+  Future<int> fetchMembersCount() async {
+    Map<String, dynamic> activityData = await fetchActivityData();
+    List<String> memberIds = List.from(activityData['Members'] ?? []);
+    return memberIds.length;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMembersCount().then((count) {
+      setState(() {
+        membersCount = count;
+      });
+    });
   }
 
   @override
@@ -44,111 +66,150 @@ class _MembersPageState extends State<MembersPage> {
           children: [
             // Requests Section (only for the Creator)
             if (widget.isCreator)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Requests',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 256, // Set the height as needed
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: requests.map((request) {
-                          return Card(
-                            child: InkWell(
-                              onTap: () {
-                                // Add logic for when a request card is tapped
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(request),
-                                    SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            // Logic to accept the requested member
-                                          },
-                                          child: Text('Accept'),
-                                        ),
-                                        SizedBox(width: 8),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            // Logic to reject the requested member
-                                          },
-                                          child: Text('Reject'),
-                                        ),
-                                      ],
+              FutureBuilder<Map<String, dynamic>>(
+                future: fetchActivityData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    Map<String, dynamic> activityData = snapshot.data ?? {};
+                    requests = List.from(activityData['Requests'] ?? []);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Requests (${requests.length})',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 256,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: requests.map((request) {
+                                return Card(
+                                  child: InkWell(
+                                    onTap: () {
+                                      // Add logic for when a request card is tapped
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(request),
+                                          // Text('${user['Name']}, Age: ${user['Age']}, Rating: ${user['Rating']}'),
+
+                                          SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  // Logic to accept the requested member
+                                                },
+                                                child: Text('Accept'),
+                                              ),
+                                              SizedBox(width: 8),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  // Logic to reject the requested member
+                                                },
+                                                child: Text('Reject'),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ],
-                                ),
-                              ),
+                                  ),
+                                );
+                              }).toList(),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                ],
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                      ],
+                    );
+                  }
+                },
               ),
 
             // Members Section
             Text(
-              'Members',
+              'Members ($membersCount)',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: FutureBuilder<List<Map<String, dynamic>>>(
-                  future: fetchUserData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      List<Map<String, dynamic>> userData = snapshot.data ?? [];
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: fetchActivityData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    Map<String, dynamic> activityData = snapshot.data ?? {};
+                    List<String> memberIds = List.from(activityData['Members'] ?? []);
+                    
+                    return FutureBuilder<List<Map<String, dynamic>>>(
+                      future: fetchMembersData(memberIds),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          List<Map<String, dynamic>> membersData = snapshot.data ?? [];
 
-                      return Column(
-                        children: userData.map((user) {
-                          String memberName = user['Name'];
-                          String memberEmail = user['email'];
-                          int memberAge = user['Age'];
-                          bool isAdmin = user == userData.first;
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: membersData.map((user) {
+                                String memberName = user['Name'];
+                                String memberEmail = user['email'];
+                                int memberAge = user['Age'];
+                                int rating = user['Rating'];
 
-                          return Card(
-                            child: InkWell(
-                              onTap: () {
-                                // Add logic for when a member card is tapped
-                              },
-                              child: ListTile(
-                                title: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(memberName),
-                                    SizedBox(height: 8),
-                                    Text(memberEmail),
-                                    SizedBox(height: 8),
-                                    Text('Age: $memberAge'),
-                                  ],
-                                ),
-                                subtitle: isAdmin ? Text('Admin/Creator') : null,
-                              ),
+                                return Card(
+                                  child: InkWell(
+                                    onTap: () {
+                                      // Add logic for when a member card is tapped
+                                    },
+                                    child: ListTile(
+                                      title: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(memberName),
+                                          SizedBox(height: 8),
+                                          Text(memberEmail),
+                                          SizedBox(height: 8),
+                                          Text('Age: $memberAge'),
+                                          SizedBox(height: 8),
+                                          Text('Rating: $rating')
+                                        ],
+                                      ),
+                                      trailing: widget.isCreator
+                                        ? IconButton(
+                                            icon: Icon(Icons.delete),
+                                            onPressed: () {
+                                              // Logic to delete the member
+                                            },
+                                          )
+                                        : null,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                             ),
                           );
-                        }).toList(),
-                      );
-                    }
-                  },
-                ),
+                        }
+                      },
+                    );
+                  }
+                },
               ),
             ),
           ],
