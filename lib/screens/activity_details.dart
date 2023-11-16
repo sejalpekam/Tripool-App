@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tripool_app/app_state.dart';
 import 'package:tripool_app/model/category.dart';
+import 'package:tripool_app/screens/tabs/edit_tab.dart';
 import 'package:tripool_app/widgets/category_widget.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
 
@@ -45,6 +46,7 @@ class _DetailsPageState extends State<DetailsPage> {
           String Creator = snapshotDoc.get('Creator');
           Timestamp From = snapshotDoc.get('From') as Timestamp;
           Timestamp To = snapshotDoc.get('To') as Timestamp;
+          String Destination = snapshotDoc.get('Destination');
           var Members = snapshotDoc.get('Members') as List<dynamic>;
           var Requests = snapshotDoc.get('Requests') as List<dynamic>;
           print(Activity_Description);
@@ -94,13 +96,14 @@ class _DetailsPageState extends State<DetailsPage> {
             actionButtons = [
               memberListButton,
               OutlinedButton(
-                  child: Text('Manage Group'),
+                  child: Text('Manage Activity'),
                   onPressed: () {
-                    //TODO: Manage group?
-                    //   Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditActivityTab(activityId: widget.activityId)),
+                    );
                   }),
             ];
           }
@@ -127,6 +130,31 @@ class _DetailsPageState extends State<DetailsPage> {
                     });
                   },
                   child: Text('Withdraw Request'))
+            ];
+          }
+
+          if (Members.contains(currUser?.uid)) {
+            actionButtons = [
+              memberListButton,
+              OutlinedButton(
+                  onPressed: () async {
+                    final userDoc = FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc(currUser!.uid);
+                    final user = await userDoc.get();
+                    await userDoc.update({
+                      'Joined_Activities':
+                          (user.get('Joined_Activities') as List<dynamic>)
+                              .where((req) => req != widget.activityId),
+                    });
+                    await FirebaseFirestore.instance
+                        .collection('Activity')
+                        .doc(widget.activityId)
+                        .update({
+                      'Members': (Members).where((req) => req != currUser.uid)
+                    });
+                  },
+                  child: Text('Leave Group'))
             ];
           }
 
@@ -224,64 +252,89 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(children: [
-                      const Text('Categories',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20)),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: <Widget>[
-                            for (final category in categories.where(
-                                ((category) => category.name == Category)))
-                              CategoryWidget(
-                                category: category,
-                                selectable: false,
-                              )
-                          ],
-                        ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.location_pin, size: 32),
+                      Text(
+                        Destination,
+                        style: TextStyle(fontSize: 20),
                       ),
-                    ]),
+                    ],
                   ),
-                  Divider(thickness: 1.5),
-                  const Text('About',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: StreamBuilder<DocumentSnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('Users')
-                            .doc(Creator)
-                            .snapshots(),
-                        builder: (_, snapshot) {
-                          if (snapshot.hasError) {
-                            return Text('Something went wrong');
-                          }
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(children: [
+                          const Text('Category',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                          CategoryWidget(
+                            category: categories.firstWhere(
+                                (element) => element.name == Category),
+                            selectable: false,
+                          ),
+                        ]),
+                        Column(children: [
+                          const Text('Creator',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                          StreamBuilder<DocumentSnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('Users')
+                                  .doc(Creator)
+                                  .snapshots(),
+                              builder: (_, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text('Something went wrong');
+                                }
 
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return LoadingWidget();
-                          }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return LoadingWidget();
+                                }
 
-                          final snapshotDoc = snapshot.data!;
+                                final snapshotDoc = snapshot.data!;
 
-                          String Name = snapshotDoc.get('Name');
+                                String Name = snapshotDoc.get('Name');
 
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.person, size: 24),
-                              OutlinedButton(
+                                return TextButton(
                                   onPressed: () {
                                     // ON RPESS
                                   },
-                                  child: Text(Name)),
-                            ],
-                          );
-                        }),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 10),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 0, 10),
+                                            child: Icon(Icons.person, size: 40),
+                                          ),
+                                          Text(Name,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14))
+                                        ]),
+                                  ),
+                                );
+                              }),
+                        ]),
+                      ],
+                    ),
+                  ),
+                  Divider(thickness: 1.5),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: const Text('About Activity',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20)),
                   ),
                   Text(
                     Activity_Description,

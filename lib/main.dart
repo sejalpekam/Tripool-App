@@ -17,7 +17,17 @@ void main() async {
   // await dotenv.load();
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey:  'AIzaSyCHLxwY3cOr38UTa1KIajqKxBfYClDaMrk',
+      projectId:  'tripool-ea5ee',
+      storageBucket:  'tripool-ea5ee.appspot.com',
+      messagingSenderId:'',
+      appId: '1:362397402376:android:68664deac5ea50062498bd',
+    ),
+  );
+
   runApp(const MyApp());
 }
 

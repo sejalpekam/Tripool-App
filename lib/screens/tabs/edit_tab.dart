@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tripool_app/widgets/loading_widget.dart';
 
-List<String> categories = <String>[
+List<String> categoriesDropdown = <String>[
   'Event',
   'Outdoor',
   'Sports',
@@ -12,100 +12,23 @@ List<String> categories = <String>[
   'Other'
 ];
 
-class CreateActivityTab extends StatefulWidget {
-  const CreateActivityTab({super.key});
+class EditActivityTab extends StatefulWidget {
+  final String activityId;
+
+  const EditActivityTab({super.key, required this.activityId});
 
   @override
-  State<CreateActivityTab> createState() => _CreateActivityTabState();
+  State<EditActivityTab> createState() => _EditActivityTabState();
 }
 
-class _CreateActivityTabState extends State<CreateActivityTab> {
-  // controllers for input
-  var _activityTitleController = TextEditingController();
-  var  _activityDescController = TextEditingController();
-  var  _activityDestinationController = TextEditingController();
-
-
- @override
-void dispose() {
-  _activityTitleController.dispose();
-  _activityDescController.dispose();
-  _activityDestinationController.dispose();
-  super.dispose();
-}
-
-
-Future submitForm() async {
-  print("Submit button clicked");
-  final isValid = _formKey.currentState!.validate();
-  if (!isValid) {
-    return; // If the form is not valid, do not proceed.
-  }
-
-  // Extracting data from controllers
-  String activityTitle = _activityTitleController.text.trim();
-  String activityDescription = _activityDescController.text.trim();
-  String activityDestination = _activityDestinationController.text.trim();
-  String category = dropdownValue;
-
-  // Combine date and time for start and end
-  DateTime? combinedStartDate = combineDateTime(startdate, starttime);
-  DateTime? combinedEndDate = combineDateTime(enddate, endtime);
-
-  // Convert DateTime to Timestamp for Firestore
-  Timestamp startTimestamp = Timestamp.fromDate(combinedStartDate ?? DateTime.now());
-  Timestamp endTimestamp = Timestamp.fromDate(combinedEndDate ?? DateTime.now());
-
-  // Calling addActivityDetails function with the collected data
-  await addActivityDetails(
-    activityTitle,
-    activityDescription,
-    activityDestination,
-    startTimestamp,
-    endTimestamp,
-    category,
-    "" // Creator is an empty string as per your instruction
-  );
-
-   // Show confirmation dialog
-  await showConfirmationDialog();
-
-  // Optionally reset the form
-  _formKey.currentState!.reset();
-}
-
-DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
-  if (date == null || time == null) return null;
-  return DateTime(date.year, date.month, date.day, time.hour, time.minute);
-}
-
-
-
-Future addActivityDetails(String activityTitle, String activityDescription, String activityDestination, Timestamp startDate, Timestamp endDate, String category, String creator) async {
-  await FirebaseFirestore.instance.collection('Activity').add({
-    'Activity_Description': activityDescription,
-    'Activity_Name': activityTitle,
-    'Category': category,
-    'Creator': creator,
-    'Destination': activityDestination,
-    'From': startDate,
-    'To': endDate,
-    'Members': [], // Initialize as empty array
-    'Requests': []  // Initialize as empty array
-  });
-}
-
-
-
-
-
+class _EditActivityTabState extends State<EditActivityTab> {
   final _formKey = GlobalKey<FormState>();
 
   String title = '';
   String desc = '';
   String location = '';
 
-  String dropdownValue = categories.first;
+  String dropdownValue = categoriesDropdown.first;
 
   DateTime? startDateTime;
   DateTime? startdate;
@@ -136,53 +59,85 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Activity'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
+    DocumentReference activityRef = FirebaseFirestore.instance
+        .collection('Activity')
+        .doc(widget.activityId);
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: activityRef.get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return LoadingWidget();
+        }
+
+        final snapshotDoc = snapshot.data!;
+
+        title = snapshotDoc.get('Activity_Name');
+        desc = snapshotDoc.get('Activity_Description');
+        dropdownValue = snapshotDoc.get('Category');
+        String Creator = snapshotDoc.get('Creator');
+        location = snapshotDoc.get('Destination');
+        startDateTime = (snapshotDoc.get('From') as Timestamp).toDate();
+        startdate = startDateTime;
+        starttime = TimeOfDay.fromDateTime(startdate!);
+        endDateTime = (snapshotDoc.get('To') as Timestamp).toDate();
+        enddate = endDateTime;
+        endtime = TimeOfDay.fromDateTime(enddate!);
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Edit Activity'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  buildTitle(),
-                  const SizedBox(height: 10),
-                  buildDesc(),
-                  const SizedBox(height: 10),
-                  buildLocation(),
-                  const SizedBox(height: 10),
-                  buildCategory(),
-                  const SizedBox(height: 10),
-                  buildStartDate(startdate, starttime),
-                  const SizedBox(height: 10),
-                  buildEndDate(enddate, endtime),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      buildResetButton(),
-                      buildSubmitButton(),
+                      buildTitle(),
+                      const SizedBox(height: 10),
+                      buildDesc(),
+                      const SizedBox(height: 10),
+                      buildLocation(),
+                      const SizedBox(height: 10),
+                      buildCategory(),
+                      const SizedBox(height: 10),
+                      buildStartDate(startdate, starttime),
+                      const SizedBox(height: 10),
+                      buildEndDate(enddate, endtime),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          buildResetButton(),
+                          buildSubmitButton(),
+                        ],
+                      ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget buildTitle() => TextFormField(
-        controller: _activityTitleController, // Assign the controller here
         decoration: const InputDecoration(
           labelText: 'Activity Title',
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
+        initialValue: title,
         validator: (value) {
           if (value!.length < 4) {
             return 'Enter at least 4 characters';
@@ -194,13 +149,13 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
       );
 
   Widget buildDesc() => TextFormField(
-        controller: _activityDescController,
         decoration: const InputDecoration(
           labelText: 'Activity Description',
           alignLabelWithHint: true,
           border: OutlineInputBorder(),
         ),
         maxLines: 2,
+        initialValue: desc,
         keyboardType: TextInputType.multiline,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
@@ -214,16 +169,12 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         onSaved: (value) => setState(() => desc = value!),
       );
 
-
-  // Widget buildDestination() => TextFormField(
-  //       controller: _activityDestinationController,
-
   Widget buildLocation() => TextFormField(
-
         decoration: const InputDecoration(
           labelText: 'Activity location',
           border: OutlineInputBorder(),
         ),
+        initialValue: location,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
           if (value!.length < 4) {
@@ -245,8 +196,9 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
             dropdownValue = value!;
           });
         },
+        initialSelection: dropdownValue,
         dropdownMenuEntries:
-            categories.map<DropdownMenuEntry<String>>((String value) {
+            categoriesDropdown.map<DropdownMenuEntry<String>>((String value) {
           return DropdownMenuEntry<String>(value: value, label: value);
         }).toList(),
       );
@@ -339,80 +291,37 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         ),
       );
 
-  // Widget buildCategory() => DropdownMenu<String>(
-  //       initialSelection: categories.first,
-  //       onSelected: (String? value) {
-  //         // This is called when the user selects an item.
-  //         setState(() {
-  //           dropdownValue = value!;
-  //         });
-  //       },
-  //       dropdownMenuEntries:
-  //           categories.map<DropdownMenuEntry<String>>((String value) {
-  //         return DropdownMenuEntry<String>(value: value, label: value);
-  //       }).toList(),
-  //     );
-
-    Future resetForm() async {
-      setState(() {
-        _activityTitleController = TextEditingController();
-        _activityDescController = TextEditingController();
-        _activityDestinationController = TextEditingController();
-        dropdownValue = categories.first;
-        startdate = null;
-        starttime = null;
-        enddate = null;
-        endtime = null;
-      });
-
-  _formKey.currentState!.reset();
-}
-
-
   Widget buildResetButton() => Builder(
-    builder: (context) => ElevatedButton(
-      child: const Text('Reset'),
-      onPressed: resetForm,
-    ),
-  );
-
+        builder: (context) => ElevatedButton(
+          child: const Text('Reset'),
+          onPressed: () {
+            _formKey.currentState!.reset();
+          },
+        ),
+      );
 
   Widget buildSubmitButton() => Builder(
         builder: (context) => ElevatedButton(
           child: const Text('Submit'),
-          onPressed: submitForm,
+          onPressed: () async {
+            final isValid = _formKey.currentState!.validate();
+            FocusScope.of(context).unfocus();
+
+            if (isValid) {
+              _formKey.currentState!.save();
+
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                duration: Duration(seconds: 5),
+                content: Text('Form Submitted'),
+              ));
+
+              // setState(() {
+              //   date = null;
+              //   time = null;
+              // });
+              _formKey.currentState!.reset();
+            }
+          },
         ),
       );
-
-// pop up dialog 
-Future<void> showConfirmationDialog() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // User must tap button to close the dialog
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Confirmation'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('Activity Created Successfully'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Closes the dialog
-            },
-          ),
-        ],
-      );
-    },
-  );
 }
-
-}
-
-
-
