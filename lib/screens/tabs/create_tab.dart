@@ -20,7 +20,7 @@ class CreateActivityTab extends StatefulWidget {
 }
 
 class _CreateActivityTabState extends State<CreateActivityTab> {
-  // controllers
+  // controllers for input
   var _activityTitleController = TextEditingController();
   var  _activityDescController = TextEditingController();
   var  _activityDestinationController = TextEditingController();
