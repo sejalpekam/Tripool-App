@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tripool_app/widgets/loading_widget.dart';
 
-List<String> categories = <String>[
+List<String> categoriesDropdown = <String>[
   'Event',
   'Outdoor',
   'Sports',
@@ -26,7 +28,7 @@ class _EditActivityTabState extends State<EditActivityTab> {
   String desc = '';
   String location = '';
 
-  String dropdownValue = categories.first;
+  String dropdownValue = categoriesDropdown.first;
 
   DateTime? startDateTime;
   DateTime? startdate;
@@ -57,19 +59,20 @@ class _EditActivityTabState extends State<EditActivityTab> {
 
   @override
   Widget build(BuildContext context) {
-    DocumentReference activityRef = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
+    DocumentReference activityRef = FirebaseFirestore.instance
+        .collection('Activity')
+        .doc(widget.activityId);
 
     return FutureBuilder<DocumentSnapshot>(
       future: activityRef.get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-
         if (snapshot.hasError) {
-          return Text("Something went wrong");
+          return Text('Something went wrong');
         }
 
-        if (snapshot.hasData && !snapshot.data!.exists) {
-          return Text("Document does not exist");
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return LoadingWidget();
         }
 
         final snapshotDoc = snapshot.data!;
@@ -80,7 +83,11 @@ class _EditActivityTabState extends State<EditActivityTab> {
         String Creator = snapshotDoc.get('Creator');
         location = snapshotDoc.get('Destination');
         startDateTime = (snapshotDoc.get('From') as Timestamp).toDate();
-        endDateTime = (Timestamp To = snapshotDoc.get('To') as Timestamp).toDate();
+        startdate = startDateTime;
+        starttime = TimeOfDay.fromDateTime(startdate!);
+        endDateTime = (snapshotDoc.get('To') as Timestamp).toDate();
+        enddate = endDateTime;
+        endtime = TimeOfDay.fromDateTime(enddate!);
 
         return Scaffold(
           appBar: AppBar(
@@ -130,6 +137,7 @@ class _EditActivityTabState extends State<EditActivityTab> {
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
+        initialValue: title,
         validator: (value) {
           if (value!.length < 4) {
             return 'Enter at least 4 characters';
@@ -147,6 +155,7 @@ class _EditActivityTabState extends State<EditActivityTab> {
           border: OutlineInputBorder(),
         ),
         maxLines: 2,
+        initialValue: desc,
         keyboardType: TextInputType.multiline,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
@@ -165,6 +174,7 @@ class _EditActivityTabState extends State<EditActivityTab> {
           labelText: 'Activity location',
           border: OutlineInputBorder(),
         ),
+        initialValue: location,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
           if (value!.length < 4) {
@@ -186,8 +196,9 @@ class _EditActivityTabState extends State<EditActivityTab> {
             dropdownValue = value!;
           });
         },
+        initialSelection: dropdownValue,
         dropdownMenuEntries:
-            categories.map<DropdownMenuEntry<String>>((String value) {
+            categoriesDropdown.map<DropdownMenuEntry<String>>((String value) {
           return DropdownMenuEntry<String>(value: value, label: value);
         }).toList(),
       );

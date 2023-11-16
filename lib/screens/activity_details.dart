@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tripool_app/app_state.dart';
 import 'package:tripool_app/model/category.dart';
+import 'package:tripool_app/screens/tabs/edit_tab.dart';
 import 'package:tripool_app/widgets/category_widget.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
 
@@ -97,9 +98,11 @@ class _DetailsPageState extends State<DetailsPage> {
               OutlinedButton(
                   child: Text('Manage Group'),
                   onPressed: () {
-                      Navigator.push(
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const EditActivityTab(widget.activityId)),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditActivityTab(activityId: widget.activityId)),
                     );
                   }),
             ];
@@ -255,63 +258,88 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainsAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.pin, size: 24),
-                      Text(Destination),
+                      Icon(Icons.location_pin, size: 32),
+                      Text(
+                        Destination,
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ],
-                  );
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Column(children: [
                           const Text('Category',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20)),
-                            CategoryWidget(
-                              category: Category,
-                              selectable: false,
-                            ),
+                          CategoryWidget(
+                            category: categories.firstWhere(
+                                (element) => element.name == Category),
+                            selectable: false,
+                          ),
                         ]),
                         Column(children: [
                           const Text('Creator',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20)),
-                            StreamBuilder<DocumentSnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('Users')
-                                .doc(Creator)
-                                .snapshots(),
-                            builder: (_, snapshot) {
-                              if (snapshot.hasError) {
-                                return Text('Something went wrong');
-                              }
+                          StreamBuilder<DocumentSnapshot>(
+                              stream: FirebaseFirestore.instance
+                                  .collection('Users')
+                                  .doc(Creator)
+                                  .snapshots(),
+                              builder: (_, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text('Something went wrong');
+                                }
 
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return LoadingWidget();
-                              }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return LoadingWidget();
+                                }
 
-                              final snapshotDoc = snapshot.data!;
+                                final snapshotDoc = snapshot.data!;
 
-                              String Name = snapshotDoc.get('Name');
+                                String Name = snapshotDoc.get('Name');
 
-                              return OutlinedButton(
-                                      onPressed: () {
-                                        // ON RPESS
-                                      },
-                                      child: Text(Name),
+                                return TextButton(
+                                  onPressed: () {
+                                    // ON RPESS
+                                  },
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 10),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 0, 10),
+                                            child: Icon(Icons.person, size: 40),
+                                          ),
+                                          Text(Name,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14))
+                                        ]),
+                                  ),
                                 );
-                            }),
+                              }),
                         ]),
                       ],
                     ),
                   ),
                   Divider(thickness: 1.5),
-                  const Text('About Activity',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: const Text('About Activity',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20)),
+                  ),
                   Text(
                     Activity_Description,
                     style: TextStyle(fontSize: 16),
