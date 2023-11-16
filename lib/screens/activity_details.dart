@@ -45,6 +45,7 @@ class _DetailsPageState extends State<DetailsPage> {
           String Creator = snapshotDoc.get('Creator');
           Timestamp From = snapshotDoc.get('From') as Timestamp;
           Timestamp To = snapshotDoc.get('To') as Timestamp;
+          String Destination = snapshotDoc.get('Destination');
           var Members = snapshotDoc.get('Members') as List<dynamic>;
           var Requests = snapshotDoc.get('Requests') as List<dynamic>;
           print(Activity_Description);
@@ -96,11 +97,10 @@ class _DetailsPageState extends State<DetailsPage> {
               OutlinedButton(
                   child: Text('Manage Group'),
                   onPressed: () {
-                    //TODO: Manage group?
-                    //   Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
-                    // );
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const EditActivityTab(widget.activityId)),
+                    );
                   }),
             ];
           }
@@ -127,6 +127,31 @@ class _DetailsPageState extends State<DetailsPage> {
                     });
                   },
                   child: Text('Withdraw Request'))
+            ];
+          }
+
+          if (Members.contains(currUser?.uid)) {
+            actionButtons = [
+              memberListButton,
+              OutlinedButton(
+                  onPressed: () async {
+                    final userDoc = FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc(currUser!.uid);
+                    final user = await userDoc.get();
+                    await userDoc.update({
+                      'Joined_Activities':
+                          (user.get('Joined_Activities') as List<dynamic>)
+                              .where((req) => req != widget.activityId),
+                    });
+                    await FirebaseFirestore.instance
+                        .collection('Activity')
+                        .doc(widget.activityId)
+                        .update({
+                      'Members': (Members).where((req) => req != currUser.uid)
+                    });
+                  },
+                  child: Text('Leave Group'))
             ];
           }
 
@@ -228,65 +253,65 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ],
                   ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainsAxisAlignment.center,
+                    children: [
+                      Icon(Icons.pin, size: 24),
+                      Text(Destination),
+                    ],
+                  );
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Column(children: [
-                      const Text('Categories',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20)),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: <Widget>[
-                            for (final category in categories.where(
-                                ((category) => category.name == Category)))
-                              CategoryWidget(
-                                category: category,
-                                selectable: false,
-                              )
-                          ],
-                        ),
-                      ),
-                    ]),
+                    child: Row(
+                      children: [
+                        Column(children: [
+                          const Text('Category',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                            CategoryWidget(
+                              category: Category,
+                              selectable: false,
+                            ),
+                        ]),
+                        Column(children: [
+                          const Text('Creator',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20)),
+                            StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('Users')
+                                .doc(Creator)
+                                .snapshots(),
+                            builder: (_, snapshot) {
+                              if (snapshot.hasError) {
+                                return Text('Something went wrong');
+                              }
+
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return LoadingWidget();
+                              }
+
+                              final snapshotDoc = snapshot.data!;
+
+                              String Name = snapshotDoc.get('Name');
+
+                              return OutlinedButton(
+                                      onPressed: () {
+                                        // ON RPESS
+                                      },
+                                      child: Text(Name),
+                                );
+                            }),
+                        ]),
+                      ],
+                    ),
                   ),
                   Divider(thickness: 1.5),
-                  const Text('About',
+                  const Text('About Activity',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: StreamBuilder<DocumentSnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('Users')
-                            .doc(Creator)
-                            .snapshots(),
-                        builder: (_, snapshot) {
-                          if (snapshot.hasError) {
-                            return Text('Something went wrong');
-                          }
-
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return LoadingWidget();
-                          }
-
-                          final snapshotDoc = snapshot.data!;
-
-                          String Name = snapshotDoc.get('Name');
-
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.person, size: 24),
-                              OutlinedButton(
-                                  onPressed: () {
-                                    // ON RPESS
-                                  },
-                                  child: Text(Name)),
-                            ],
-                          );
-                        }),
-                  ),
                   Text(
                     Activity_Description,
                     style: TextStyle(fontSize: 16),
