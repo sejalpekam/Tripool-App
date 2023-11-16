@@ -66,7 +66,7 @@ class _ProfileTabState extends State<ProfileTab> {
           SizedBox(height: 70),
           CircleAvatar(
             radius: 50,
-            backgroundImage: NetworkImage(data['profileImageUrl'] ?? 'default_profile_image_url'),
+            backgroundImage: NetworkImage(data['profileImageUrl'] ?? 'web/kisspng-gandalf-the-lord-of-the-rings-the-fellowship-of-t-gandalf-transparent-png-5a75ecd4c082e6.2548756615176777807885.jpg'),
           ),
           SizedBox(height: 10),
           // Rating just below the image
