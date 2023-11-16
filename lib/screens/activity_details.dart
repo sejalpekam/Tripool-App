@@ -194,9 +194,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(DateFormat.jms().format(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    From.toDate().millisecondsSinceEpoch))),
+                            child: Text(DateFormat.jm().format(From.toDate())),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -213,9 +211,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(DateFormat.jms().format(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    To.toDate().millisecondsSinceEpoch))),
+                            child: Text(DateFormat.jm().format(To.toDate())),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
