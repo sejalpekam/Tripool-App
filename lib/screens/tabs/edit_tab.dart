@@ -84,7 +84,7 @@ class _EditActivityTabState extends State<EditActivityTab> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Create Activity'),
+            title: const Text('Edit Activity'),
           ),
           body: Padding(
             padding: const EdgeInsets.all(20),
