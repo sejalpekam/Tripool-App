@@ -331,7 +331,7 @@ class _MembersPageState extends State<MembersPage> {
                                 String memberName = userData['Name'];
                                 String memberEmail = userData['email'];
                                 int memberAge = userData['Age'];
-                                int rating = userData['Rating'];
+                                // int rating = userData['Rating'];
 
                                 return Card(
                                   child: InkWell(
@@ -354,7 +354,7 @@ class _MembersPageState extends State<MembersPage> {
                                           SizedBox(height: 8),
                                           Text('Age: $memberAge'),
                                           SizedBox(height: 8),
-                                          Text('Rating: $rating'),
+                                          // Text('Rating: $rating'),
                                         ],
                                       ),
                                       trailing: widget.isCreator &&
