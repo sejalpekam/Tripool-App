@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tripool_app/app_state.dart';
 import 'package:tripool_app/model/category.dart';
+import 'package:tripool_app/screens/members_page.dart';
 import 'package:tripool_app/screens/tabs/edit_tab.dart';
 import 'package:tripool_app/widgets/category_widget.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
@@ -60,11 +61,15 @@ class _DetailsPageState extends State<DetailsPage> {
                 size: 40,
               ),
               onPressed: () {
-                //TODO: Nav to MemberList when widget is done
-                //   Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
-                // );
+                final isCreator = Creator == currUser?.uid;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MembersPage(
+                            isCreator: isCreator,
+                            activityId: widget.activityId,
+                          )),
+                );
               });
 
           var requestJoinButton = OutlinedButton(
