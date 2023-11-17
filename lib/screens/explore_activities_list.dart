@@ -44,6 +44,7 @@ class _ActivityListState extends State<ActivityList> {
             title: data['Activity_Name'],
             description: data['Activity_Description'],
             host: data['Creator'],
+            hostname: data['CreatorName'],
             location: data['Destination'],
             startdate: DateFormat('dd MMM yyyy').format(FromDateTime),
             starttime: DateFormat.jm().format(FromDateTime),

@@ -13,6 +13,7 @@ List<String> categories = <String>[
   'Other'
 ];
 
+User? user = FirebaseAuth.instance.currentUser;
 class CreateActivityTab extends StatefulWidget {
   const CreateActivityTab({super.key});
 
@@ -43,11 +44,17 @@ Future submitForm() async {
     return; // If the form is not valid, do not proceed.
   }
 
+  var userData = await FirebaseFirestore.instance.collection('Users').doc(user?.uid).get();
+
+
+  String userName = userData.get('Name') as String;
+
   // Extracting data from controllers
   String activityTitle = _activityTitleController.text.trim();
   String activityDescription = _activityDescController.text.trim();
   String activityDestination = _activityDestinationController.text.trim();
   String category = dropdownValue;
+  String? creatorId = user?.uid;
 
   // Combine date and time for start and end
   DateTime? combinedStartDate = combineDateTime(startdate, starttime);
@@ -57,6 +64,7 @@ Future submitForm() async {
   Timestamp startTimestamp = Timestamp.fromDate(combinedStartDate ?? DateTime.now());
   Timestamp endTimestamp = Timestamp.fromDate(combinedEndDate ?? DateTime.now());
 
+
   // Calling addActivityDetails function with the collected data
   await addActivityDetails(
     activityTitle,
@@ -65,14 +73,15 @@ Future submitForm() async {
     startTimestamp,
     endTimestamp,
     category,
-    "" // Creator is an empty string as per your instruction
+    creatorId!,
+    userName
   );
 
    // Show confirmation dialog
   await showConfirmationDialog();
 
   // Optionally reset the form
-  _formKey.currentState!.reset();
+  resetForm();
 }
 
 DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
@@ -82,12 +91,13 @@ DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
 
 
 
-Future addActivityDetails(String activityTitle, String activityDescription, String activityDestination, Timestamp startDate, Timestamp endDate, String category, String creator) async {
+Future addActivityDetails(String activityTitle, String activityDescription, String activityDestination, Timestamp startDate, Timestamp endDate, String category, String creatorId, String userName) async {
   await FirebaseFirestore.instance.collection('Activity').add({
     'Activity_Description': activityDescription,
     'Activity_Name': activityTitle,
     'Category': category,
-    'Creator': FirebaseAuth.instance.currentUser!.uid,
+    'Creator': creatorId,
+    'CreatorName': userName,
     'Destination': activityDestination,
     'From': startDate,
     'To': endDate,

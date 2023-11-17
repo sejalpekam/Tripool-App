@@ -145,232 +145,236 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.where_to_vote_outlined,
-                  size: 100,
-                ),
-                SizedBox(height: 75),
-                Text(
-                  'Register below with your details!',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple[900],
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.where_to_vote_outlined,
+                    size: 100,
                   ),
-                ),
-                SizedBox(height: 50),
-                // Name
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Name *',
-                        ),
-                      ),
+                  SizedBox(height: 75),
+                  Text(
+                    'Register below with your details!',
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
                     ),
                   ),
-                ),
-                SizedBox(height: 10),
-                // Age
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: _ageController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Age *',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                // email Textfield
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Email *',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                // Location
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: _locationController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Location *',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                // Bio
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: _bioController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Bio *',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-
-                // password textfield
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Password *',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                // confirm password textfield
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: TextField(
-                        controller: _confirmpasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Confrm Password *',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: GestureDetector(
-                    onTap: signUp,
+                  SizedBox(height: 50),
+                  // Name
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: Container(
-                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.purple[900],
+                        color: Colors.grey[200],
                         border: Border.all(color: Colors.white),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Center(
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: TextField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Name *',
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'I am a Member!',
-                      style: TextStyle(
-                        color: Colors.purple[900],
-                        fontWeight: FontWeight.bold,
+                  SizedBox(height: 10),
+                  // Age
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: widget.showLoginPage,
-                      child: Text(
-                        'Login Now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: TextField(
+                          controller: _ageController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Age *',
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  SizedBox(height: 10),
+                  // email Textfield
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: TextField(
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Email *',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+        
+                  // Location
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: TextField(
+                          controller: _locationController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Location *',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+        
+                  // Bio
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: TextField(
+                          controller: _bioController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Bio *',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+        
+                  // password textfield
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: TextField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Password *',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  // confirm password textfield
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: TextField(
+                          controller: _confirmpasswordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Confrm Password *',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: GestureDetector(
+                      onTap: signUp,
+                      child: Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'I am a Member!',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width:10),
+                      GestureDetector(
+                        onTap: widget.showLoginPage,
+                        child: Text(
+                          'Login Now',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
