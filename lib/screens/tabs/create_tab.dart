@@ -77,9 +77,6 @@ Future submitForm() async {
 
   // Optionally reset the form
   _formKey.currentState!.reset();
-
-  // resset all fields
-  resetForm();
 }
 
 // error dialog for Time/Date
