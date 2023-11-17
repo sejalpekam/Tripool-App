@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
-import 'package:tripool_app/screens/tabs/home_tab.dart';
+import 'package:tripool_app/screens/tabs/create_tab.dart';
+import 'package:tripool_app/screens/tabs/explore_tab.dart';
 import 'package:tripool_app/screens/tabs/profile_tab.dart';
 import 'package:tripool_app/screens/tabs/schedule_tab.dart';
 
@@ -18,14 +19,16 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = PersistentTabController(initialIndex: 1);
+    _controller = PersistentTabController(initialIndex: 2);
     _hideNavBar = false;
   }
 
   List<Widget> _buildTabs() {
     return [
       ScheduleTab(),
-      HomeTab(),
+      // HomeTab(),
+      CreateActivityTab(),
+      ExploreTab(),
       ProfileTab(),
     ];
   }
@@ -38,9 +41,21 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
         activeColorPrimary: Theme.of(context).colorScheme.primary,
         // inactiveColorPrimary: Colors.grey,
       ),
+      // PersistentBottomNavBarItem(
+      //   icon: const Icon(Icons.home),
+      //   title: ("Home"),
+      //   activeColorPrimary: Theme.of(context).colorScheme.primary,
+      //   // inactiveColorPrimary: Colors.grey,
+      // ),
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.home),
-        title: ("Home"),
+        icon: const Icon(Icons.create_new_folder),
+        title: ("Create"),
+        activeColorPrimary: Theme.of(context).colorScheme.primary,
+        // inactiveColorPrimary: Colors.grey,
+      ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(Icons.explore),
+        title: ("Explore"),
         activeColorPrimary: Theme.of(context).colorScheme.primary,
         // inactiveColorPrimary: Colors.grey,
       ),

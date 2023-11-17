@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import 'package:tripool_app/screens/auth/auth_page.dart';
+import 'auth/login_page.dart';
 import 'home_page.dart';
-import 'members_page.dart';
 
 class MainPage extends StatelessWidget{
   const MainPage({Key? key}) : super(key: key);
@@ -14,9 +14,11 @@ class MainPage extends StatelessWidget{
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if(snapshot.hasData){
-            return const MembersPage(isCreator: true, activityId:"i1eqO0vSQ8iWHC7Z73Vj",);
+            print(" I am in Home");
+            return const HomePage();
           } else {
-            return const LoginPage();
+            print(" I am AuthPage");
+            return const AuthPage();
           }
         },
       ),
