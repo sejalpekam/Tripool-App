@@ -33,7 +33,7 @@ final entertainmentCategory = Category(
 final meetUpCategory = Category(
   categoryId: 2,
   name: "Meetup",
-  icon: Icons.location_on,
+  icon: Icons.groups_2,
 );
 
 final outdoorCategory = Category(

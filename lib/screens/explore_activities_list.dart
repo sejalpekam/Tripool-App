@@ -34,6 +34,8 @@ class _ActivityListState extends State<ActivityList> {
           return Text('No data found');
         }
 
+        
+
         List<Event> events = snapshot.data!.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           DateTime FromDateTime = data['From'].toDate();
