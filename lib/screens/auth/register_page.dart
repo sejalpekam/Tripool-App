@@ -51,29 +51,35 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future signUp() async {
-    // All fields are filled, proceed with sign-up
-    if (_validateFields()) {
-      // check same password
-      if (passwordConfirmed()) {
-        // create user
-        UserCredential cred =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+  if (!_validateFields()) {
+    _showDialog('Please fill out all fields');
+    return;
+  }
 
-        // add user details
-        addUserDetails(
-          cred.user!.uid,
-          _emailController.text.trim(),
-          _nameController.text.trim(),
-          int.parse(_ageController.text.trim()),
-          _bioController.text.trim(),
-          _locationController.text.trim(),
-        );
+  if (!passwordConfirmed()) {
+    _showDialog('Passwords do not match');
+    return;
+  }
 
-        // Navigate to the SignUpSuccessPage without removing AuthPage from stack
-        Navigator.push(
+  try {
+    // User creation process
+    UserCredential cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    // Add user details
+    await addUserDetails(
+      cred.user!.uid,
+      _emailController.text.trim(),
+      _nameController.text.trim(),
+      int.parse(_ageController.text.trim()),
+      _bioController.text.trim(),
+      _locationController.text.trim(),
+    );
+
+    // Navigate to success page
+    Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SignUpSuccessPage(
@@ -88,12 +94,18 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         );
-      }
-    } else {
-      // Show dialog if validation fails
-      _showDialog('Please fill out all fields');
-    }
+
+  } on FirebaseAuthException catch (e) {
+    // If Firebase throws an exception, show it in a dialog
+    _showDialog('Failed to sign up: ${e.message}');
+  } catch (e) {
+    // For any other exceptions
+    _showDialog('An unexpected error occurred');
   }
+}
+
+
+  
 
   // pop up window
   void _showDialog(String message) {
