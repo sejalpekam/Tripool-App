@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 List<String> categories = <String>[
-  'Event',
+  'Entertainment',
   'Outdoor',
   'Sports',
   'Trip',
@@ -103,7 +103,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
 
   String title = '';
   String desc = '';
-  String location = '';
+  String destination = '';
 
   String dropdownValue = categories.first;
 
@@ -152,7 +152,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
                   const SizedBox(height: 10),
                   buildDesc(),
                   const SizedBox(height: 10),
-                  buildLocation(),
+                  buildDestination(),
                   const SizedBox(height: 10),
                   buildCategory(),
                   const SizedBox(height: 10),
@@ -215,13 +215,11 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
       );
 
 
-  // Widget buildDestination() => TextFormField(
-  //       controller: _activityDestinationController,
-
-  Widget buildLocation() => TextFormField(
-
+  Widget buildDestination() => TextFormField(
+        controller: _activityDestinationController,
         decoration: const InputDecoration(
-          labelText: 'Activity location',
+          labelText: 'Activity Destination',
+
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -243,12 +241,9 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
           // This is called when the user selects an item.
           setState(() {
             dropdownValue = value!;
-          });
+          })
         },
-        dropdownMenuEntries:
-            categories.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
-        }).toList(),
+        onSaved: (value) => setState(() => destination = value!),
       );
 
   Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(
@@ -413,6 +408,5 @@ Future<void> showConfirmationDialog() async {
 }
 
 }
-
 
 
