@@ -252,6 +252,8 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ],
                   ),
+                  // Add this SizedBox for spacing
+                  SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -263,6 +265,8 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
+                  Divider(thickness: 1.5),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
