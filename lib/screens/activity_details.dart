@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tripool_app/app_state.dart';
 import 'package:tripool_app/model/category.dart';
+import 'package:tripool_app/screens/members_page.dart';
 import 'package:tripool_app/screens/tabs/edit_tab.dart';
 import 'package:tripool_app/widgets/category_widget.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
@@ -60,11 +61,12 @@ class _DetailsPageState extends State<DetailsPage> {
                 size: 40,
               ),
               onPressed: () {
+                bool isCreator = currUser!.uid == Creator;
                 //TODO: Nav to MemberList when widget is done
-                //   Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
-                // );
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MembersPage(isCreator: isCreator, activityId: widget.activityId,)),
+                );
               });
 
           var requestJoinButton = OutlinedButton(
@@ -96,7 +98,7 @@ class _DetailsPageState extends State<DetailsPage> {
             actionButtons = [
               memberListButton,
               OutlinedButton(
-                  child: Text('Manage Activity'),
+                  child: Text('Edit Activity'),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -282,6 +284,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             selectable: false,
                           ),
                         ]),
+                        SizedBox(width: 40,),
                         Column(children: [
                           const Text('Creator',
                               style: TextStyle(
@@ -309,24 +312,20 @@ class _DetailsPageState extends State<DetailsPage> {
                                   onPressed: () {
                                     // ON RPESS
                                   },
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 10),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 0, 0, 10),
-                                            child: Icon(Icons.person, size: 40),
-                                          ),
-                                          Text(Name,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14))
-                                        ]),
-                                  ),
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 0, 10),
+                                          child: Icon(Icons.person, size: 45),
+                                        ),
+                                        Text(Name,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14))
+                                      ]),
                                 );
                               }),
                         ]),
