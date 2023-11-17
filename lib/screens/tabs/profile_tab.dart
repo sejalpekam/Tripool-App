@@ -57,7 +57,7 @@ class _ProfileTabState extends State<ProfileTab> {
             .doc(user.uid)
             .update({
           'Name': nameController.text,
-          'Age': ageController.text,
+          'Age': int.parse(ageController.text),
           'Description': bioController.text,
           'Location': locationController.text,
           // Add more fields as needed

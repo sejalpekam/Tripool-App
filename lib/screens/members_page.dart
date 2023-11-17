@@ -334,7 +334,7 @@ class _MembersPageState extends State<MembersPage> {
                             scrollDirection: Axis.vertical,
                             child: Column(
                               children: membersData.map((user) {
-                                print('user ==> ${user.data()!['id']}');
+                                print('user ==> ${user.data()}');
                                 final userData = user.data();
                                 String memberName = userData['Name'];
                                 String memberEmail = userData['email'];

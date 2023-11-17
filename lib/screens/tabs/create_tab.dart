@@ -130,7 +130,7 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       String category,
       String creatorId,
       String userName) async {
-    await FirebaseFirestore.instance.collection('Activity').add({
+    DocumentReference docRef = await FirebaseFirestore.instance.collection('Activity').add({
       'Activity_Description': activityDescription,
       'Activity_Name': activityTitle,
       'Category': category,
@@ -144,6 +144,17 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       ], // Initialize as empty array
       'Requests': [] // Initialize as empty array
     });
+    // final currUser = FirebaseAuth.instance.currentUser;
+    // final userDoc = FirebaseFirestore.instance
+    //               .collection('Users')
+    //               .doc(currUser!.uid);
+    //           final user = await userDoc.get();
+    // await userDoc.update({
+    //             'Created_Activities': [
+    //               ...user!.get('Created_Activities'),
+    //               docRef.id
+    //             ]
+    //           });
   }
 
   final _formKey = GlobalKey<FormState>();
