@@ -3,229 +3,302 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileTab extends StatefulWidget {
-  const ProfileTab({Key? key}) : super(key: key);
-
   @override
-  State<ProfileTab> createState() => _ProfileTabState();
+  _ProfileTabState createState() => _ProfileTabState();
 }
 
 class _ProfileTabState extends State<ProfileTab> {
- User? user = FirebaseAuth.instance.currentUser;
-  DocumentSnapshot? userProfileData;
-
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _locationController = TextEditingController();
-  final _emailController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+  int joinedActivitiesCount = 0;
+  int createdActivitiesCount = 0;
 
   @override
   void initState() {
     super.initState();
-    getUserProfileData();
+    // Load user profile data when the screen is initialized
+    loadUserProfile();
   }
 
-  Future<void> getUserProfileData() async {
-    var userData = await FirebaseFirestore.instance.collection('Users').doc(user?.uid).get();
-    setState(() {
-      userProfileData = userData;
-      _setDataToControllers(userData);
-    });
-  }
+  void loadUserProfile() async {
+    User? user = FirebaseAuth.instance.currentUser;
 
-  void _setDataToControllers(DocumentSnapshot userData) {
-    Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
-    _nameController.text = data['Name'] ?? '';
-    _descriptionController.text = data['Description'] ?? '';
-    _locationController.text = data['Location'] ?? '';
-    _emailController.text = data['email'] ?? '';
-  }
+    if (user != null) {
+      // Retrieve user profile data from Firestore
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _locationController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  // edit function
-   void editInfo() async {
-    
+      // Update text controllers with the retrieved data
+      setState(() {
+        nameController.text = userSnapshot['Name'] ?? '';
+        ageController.text = userSnapshot['Age'].toString() ?? '';
+        bioController.text = userSnapshot['Description'] ?? '';
+        locationController.text = userSnapshot['Location'] ?? '';
+        joinedActivitiesCount =
+            List.from(userSnapshot['Joined_Activities'] ?? []).length;
+        createdActivitiesCount =
+            List.from(userSnapshot['Created_Activities'] ?? []).length;
+      });
     }
+  }
 
-  // logout function:
+  void updateProfile() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // Update user profile data in Firestore
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user.uid)
+            .update({
+          'Name': nameController.text,
+          'Age': ageController.text,
+          'Description': bioController.text,
+          'Location': locationController.text,
+          // Add more fields as needed
+        });
+
+        // Display a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Profile updated successfully!'),
+          ),
+        );
+        loadUserProfile();
+      } catch (e) {
+        // Handle errors
+        print('Error updating profile: $e');
+      }
+    }
+  }
 
   void logOut() async {
-  await FirebaseAuth.instance.signOut();
+    await FirebaseAuth.instance.signOut();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-    if (userProfileData == null) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-    Map<String, dynamic> data = userProfileData!.data() as Map<String, dynamic>;
-    int joinedActivitiesCount = List.from(data['Joined_Activities'] ?? []).length;
-    int createdActivitiesCount = List.from(data['Created_Activities'] ?? []).length;
-
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          SizedBox(height: 70),
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(data['profileImageUrl'] ?? 'web/kisspng-gandalf-the-lord-of-the-rings-the-fellowship-of-t-gandalf-transparent-png-5a75ecd4c082e6.2548756615176777807885.jpg'),
-          ),
-          SizedBox(height: 10),
-          // Rating just below the image
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.star, color: Colors.amber),
-              Text('${data['Rating'] ?? 0}/5'),
-            ],
-          ),
-          SizedBox(height: 10),
-          // Name just below the rating
-          // Name and Activities Container in the same row
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Name field with specified width
-              SizedBox(
-                width: 100, // Adjust the width as needed
-                child: _buildEditableField('Name', _nameController),
-              ),
-
-              SizedBox(width: 80), // Optional spacing between fields
-
-              SizedBox(
-                width: 150,
-                child: ActivitiesContainer(
-                  joinedActivitiesCount: joinedActivitiesCount,
-                  createdActivitiesCount: createdActivitiesCount,
+              // Display profile image (replace with your implementation)
+              CircleAvatar(
+                radius: 50,
+                // Add your profile image here
+                backgroundImage: NetworkImage(
+                  'https://example.com/profile-image.jpg',
                 ),
               ),
+              SizedBox(height: 25),
+              // Display user details
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text("Joined"),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Text(
+                            joinedActivitiesCount.toString(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text("Created"),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Text(
+                            createdActivitiesCount.toString(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+               SizedBox(height: 16),
+              Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors
+                          .black, // You can customize the border color here
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        8.0), // You can customize the border radius here
+                  ),
+                  child: Text('Name: ${nameController.text}')),
+              SizedBox(height: 16),
+              Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors
+                          .black, // You can customize the border color here
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        8.0), // You can customize the border radius here
+                  ),
+                  child: Text('Age: ${ageController.text}')),
+              SizedBox(height: 16),
+              Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors
+                          .black, // You can customize the border color here
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        8.0), // You can customize the border radius here
+                  ),
+                  child: Text('Bio: ${bioController.text}')),
+              SizedBox(height: 16),
+              Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors
+                          .black, // You can customize the border color here
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        8.0), // You can customize the border radius here
+                  ),
+                  child: Text('Location: ${locationController.text}')),
+              SizedBox(height: 16),
+              Container(
+                  padding: EdgeInsets.all(10.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors
+                          .black, // You can customize the border color here
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        8.0), // You can customize the border radius here
+                  ),
+                  child: Text(
+                      'Email: ${FirebaseAuth.instance.currentUser?.email}')),
+              SizedBox(height: 32),
+              // Edit button to update profile
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => EditProfileDialog(
+                          nameController: nameController,
+                          ageController: ageController,
+                          bioController: bioController,
+                          locationController: locationController,
+                          onUpdatePressed: updateProfile,
+                        ),
+                      );
+                    },
+                    child: Text('Edit Profile'),
+                  ),
+                  SizedBox(width: 30),
+                  ElevatedButton(
+                    child: const Text('Log Out'),
+                    onPressed: logOut, // Call the logOut method here
+                  ),
+                ],
+              ),
             ],
           ),
-
-          SizedBox(height: 20),
-
-
-          
-          _buildEditableField('Description', _descriptionController),
-          _buildEditableField('Location', _locationController),
-          _buildEditableField('Email', _emailController),
-
-
-          // Edit and logout button
-          Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      buildEditButton(),
-                      buildLogOutButton(),
-                    ],
-                  ),
-
-        ],
-      ),
-    );
-  }
-  Widget _buildEditableField(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
         ),
-        // You can add validators or other properties as needed
       ),
     );
   }
-
-
-  // edit button
-  Widget buildEditButton() => Builder(
-    builder: (context) => ElevatedButton(
-      child: const Text('Edit'),
-      onPressed: editInfo,
-    ),
-  );
-
-  // logpout button
-  Widget buildLogOutButton() => Builder(
-    builder: (context) => ElevatedButton(
-      child: const Text('Log Out'),
-      onPressed: logOut, // Call the logOut method here
-    ),
-  );
-
-
-
 }
 
-// Activities Container classs
-class ActivitiesContainer extends StatelessWidget {
-  final int joinedActivitiesCount;
-  final int createdActivitiesCount;
+class EditProfileDialog extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController ageController;
+  final TextEditingController bioController;
+  final TextEditingController locationController;
+  final VoidCallback onUpdatePressed;
 
-  const ActivitiesContainer({
-    Key? key,
-    required this.joinedActivitiesCount,
-    required this.createdActivitiesCount,
-  }) : super(key: key);
+  EditProfileDialog({
+    required this.nameController,
+    required this.ageController,
+    required this.bioController,
+    required this.locationController,
+    required this.onUpdatePressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200, // Set a fixed width for the container
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
+    return AlertDialog(
+      title: Text('Edit Profile'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildActivityCount('Joined', joinedActivitiesCount),
-              _buildActivityCount('Created', createdActivitiesCount),
-            ],
+          TextField(
+            controller: nameController,
+            decoration: InputDecoration(labelText: 'Name'),
+          ),
+          TextField(
+            controller: ageController,
+            decoration: InputDecoration(labelText: 'Age'),
+          ),
+          TextField(
+            controller: bioController,
+            decoration: InputDecoration(labelText: 'Bio'),
+          ),
+          TextField(
+            controller: locationController,
+            decoration: InputDecoration(labelText: 'Location'),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildActivityCount(String label, int count) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '$count',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context); // Close the dialog
+          },
+          child: Text('Cancel'),
         ),
-        Text(label),
+        ElevatedButton(
+          onPressed: () {
+            onUpdatePressed();
+            Navigator.pop(context); // Close the dialog after updating
+          },
+          child: Text('Update'),
+        ),
       ],
     );
   }
