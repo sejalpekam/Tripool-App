@@ -7,6 +7,7 @@ import 'package:tripool_app/app_state.dart';
 import 'package:tripool_app/model/category.dart';
 import 'package:tripool_app/screens/members_page.dart';
 import 'package:tripool_app/screens/tabs/edit_tab.dart';
+import 'package:tripool_app/screens/view_profile.dart';
 import 'package:tripool_app/widgets/category_widget.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
 
@@ -315,7 +316,11 @@ class _DetailsPageState extends State<DetailsPage> {
 
                                 return TextButton(
                                   onPressed: () {
-                                    // ON RPESS
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ViewProfile(CreatorId: Creator,)),
+                                    );
                                   },
                                   child: Column(
                                       crossAxisAlignment:
