@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage>{
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: Colors.purple[900],
+                      color: Colors.blue,
                     ),
                   ),
                 SizedBox(height: 50),
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage>{
                       duration: Duration(milliseconds: 200),
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: isButtonPressed ? const Color.fromARGB(255, 212, 159, 244) : Colors.purple[900], // Change color on press
+                        color: isButtonPressed ? const Color.fromARGB(255, 212, 159, 244) : Colors.blue, // Change color on press
                         border: Border.all(color: Colors.white),
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -184,7 +184,7 @@ class _LoginPageState extends State<LoginPage>{
                     Text(
                       'Don\'t have an account?',
                       style: TextStyle(
-                        color: Colors.purple[900],
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

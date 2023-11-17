@@ -21,6 +21,7 @@ void main() async {
   await Firebase.initializeApp(
     options: FirebaseOptions(
       apiKey:  'AIzaSyCHLxwY3cOr38UTa1KIajqKxBfYClDaMrk',
+      databaseURL: 'https://tripool-ea5ee-default-rtdb.firebaseio.com',
       projectId:  'tripool-ea5ee',
       storageBucket:  'tripool-ea5ee.appspot.com',
       messagingSenderId:'',

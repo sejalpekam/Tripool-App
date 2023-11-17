@@ -13,6 +13,8 @@ List<String> categories = <String>[
   'Other'
 ];
 
+User? user = FirebaseAuth.instance.currentUser;
+
 class CreateActivityTab extends StatefulWidget {
   const CreateActivityTab({super.key});
 
