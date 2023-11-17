@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
 
-List<String> categoriesDropdown = <String>[
-  'Event',
+List<String> categoryNames = <String>[
+  'Events',
   'Outdoor',
   'Sports',
   'Trip',
@@ -12,9 +14,10 @@ List<String> categoriesDropdown = <String>[
   'Other'
 ];
 
+User? user = FirebaseAuth.instance.currentUser;
+
 class EditActivityTab extends StatefulWidget {
   final String activityId;
-
   const EditActivityTab({super.key, required this.activityId});
 
   @override
@@ -22,13 +25,104 @@ class EditActivityTab extends StatefulWidget {
 }
 
 class _EditActivityTabState extends State<EditActivityTab> {
+  // controllers for input
+  var _activityTitleController = TextEditingController();
+  var _activityDescController = TextEditingController();
+  var _activityDestinationController = TextEditingController();
+
+  @override
+  void dispose() {
+    _activityTitleController.dispose();
+    _activityDescController.dispose();
+    _activityDestinationController.dispose();
+    super.dispose();
+  }
+
+  Future submitForm() async {
+    print("Submit button clicked");
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      return; // If the form is not valid, do not proceed.
+    }
+
+    var userData = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(user?.uid)
+        .get();
+
+    String userName = userData.get('Name') as String;
+
+    // Extracting data from controllers
+    String activityTitle = _activityTitleController.text.trim();
+    String activityDescription = _activityDescController.text.trim();
+    String activityDestination = _activityDestinationController.text.trim();
+    String category = dropdownValue;
+    String? creatorId = user?.uid;
+
+    // Combine date and time for start and end
+    DateTime? combinedStartDate = combineDateTime(startdate, starttime);
+    DateTime? combinedEndDate = combineDateTime(enddate, endtime);
+
+    // Convert DateTime to Timestamp for Firestore
+    Timestamp startTimestamp =
+        Timestamp.fromDate(combinedStartDate ?? DateTime.now());
+    Timestamp endTimestamp =
+        Timestamp.fromDate(combinedEndDate ?? DateTime.now());
+
+    // Calling addActivityDetails function with the collected data
+    await addActivityDetails(
+        activityTitle,
+        activityDescription,
+        activityDestination,
+        startTimestamp,
+        endTimestamp,
+        category,
+        creatorId!,
+        userName);
+
+    // Show confirmation dialog
+    await showConfirmationDialog();
+
+    // Optionally reset the form
+    resetForm();
+  }
+
+  DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
+    if (date == null || time == null) return null;
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
+
+  Future addActivityDetails(
+      String activityTitle,
+      String activityDescription,
+      String activityDestination,
+      Timestamp startDate,
+      Timestamp endDate,
+      String category,
+      String creatorId,
+      String userName) async {
+    await FirebaseFirestore.instance
+        .collection('Activity')
+        .doc(widget.activityId)
+        .update({
+      'Activity_Description': activityDescription,
+      'Activity_Name': activityTitle,
+      'Category': category,
+      'Creator': creatorId,
+      'CreatorName': userName,
+      'Destination': activityDestination,
+      'From': startDate,
+      'To': endDate,
+    });
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   String title = '';
   String desc = '';
-  String location = '';
+  String destination = '';
 
-  String dropdownValue = categoriesDropdown.first;
+  String dropdownValue = categoryNames.first;
 
   DateTime? startDateTime;
   DateTime? startdate;
@@ -64,80 +158,83 @@ class _EditActivityTabState extends State<EditActivityTab> {
         .doc(widget.activityId);
 
     return FutureBuilder<DocumentSnapshot>(
-      future: activityRef.get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
+        future: activityRef.get(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return LoadingWidget();
-        }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return LoadingWidget();
+          }
 
-        final snapshotDoc = snapshot.data!;
+          final snapshotDoc = snapshot.data!;
 
-        title = snapshotDoc.get('Activity_Name');
-        desc = snapshotDoc.get('Activity_Description');
-        dropdownValue = snapshotDoc.get('Category');
-        String Creator = snapshotDoc.get('Creator');
-        location = snapshotDoc.get('Destination');
-        startDateTime = (snapshotDoc.get('From') as Timestamp).toDate();
-        startdate = startDateTime;
-        starttime = TimeOfDay.fromDateTime(startdate!);
-        endDateTime = (snapshotDoc.get('To') as Timestamp).toDate();
-        enddate = endDateTime;
-        endtime = TimeOfDay.fromDateTime(enddate!);
+          title = snapshotDoc.get('Activity_Name');
+          desc = snapshotDoc.get('Activity_Description');
+          dropdownValue = snapshotDoc.get('Category');
+          String Creator = snapshotDoc.get('Creator');
+          destination = snapshotDoc.get('Destination');
+          startDateTime = (snapshotDoc.get('From') as Timestamp).toDate();
+          startdate = startDateTime;
+          starttime = TimeOfDay.fromDateTime(startdate!);
+          endDateTime = (snapshotDoc.get('To') as Timestamp).toDate();
+          enddate = endDateTime;
+          endtime = TimeOfDay.fromDateTime(enddate!);
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Edit Activity'),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      buildTitle(),
-                      const SizedBox(height: 10),
-                      buildDesc(),
-                      const SizedBox(height: 10),
-                      buildLocation(),
-                      const SizedBox(height: 10),
-                      buildCategory(),
-                      const SizedBox(height: 10),
-                      buildStartDate(startdate, starttime),
-                      const SizedBox(height: 10),
-                      buildEndDate(enddate, endtime),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          buildResetButton(),
-                          buildSubmitButton(),
-                        ],
-                      ),
-                    ],
+          _activityDescController.text = desc;
+          _activityTitleController.text = title;
+          _activityDestinationController.text = destination;
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Create Activity'),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        buildTitle(),
+                        const SizedBox(height: 10),
+                        buildDesc(),
+                        const SizedBox(height: 10),
+                        buildDestination(),
+                        const SizedBox(height: 10),
+                        buildCategory(),
+                        const SizedBox(height: 10),
+                        buildStartDate(startdate, starttime),
+                        const SizedBox(height: 10),
+                        buildEndDate(enddate, endtime),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            buildResetButton(),
+                            buildSubmitButton(),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 
   Widget buildTitle() => TextFormField(
+        controller: _activityTitleController, // Assign the controller here
         decoration: const InputDecoration(
           labelText: 'Activity Title',
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        initialValue: title,
         validator: (value) {
           if (value!.length < 4) {
             return 'Enter at least 4 characters';
@@ -149,13 +246,13 @@ class _EditActivityTabState extends State<EditActivityTab> {
       );
 
   Widget buildDesc() => TextFormField(
+        controller: _activityDescController,
         decoration: const InputDecoration(
           labelText: 'Activity Description',
           alignLabelWithHint: true,
           border: OutlineInputBorder(),
         ),
         maxLines: 2,
-        initialValue: desc,
         keyboardType: TextInputType.multiline,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
@@ -169,12 +266,12 @@ class _EditActivityTabState extends State<EditActivityTab> {
         onSaved: (value) => setState(() => desc = value!),
       );
 
-  Widget buildLocation() => TextFormField(
+  Widget buildDestination() => TextFormField(
+        controller: _activityDestinationController,
         decoration: const InputDecoration(
-          labelText: 'Activity location',
+          labelText: 'Activity Destination',
           border: OutlineInputBorder(),
         ),
-        initialValue: location,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
           if (value!.length < 4) {
@@ -183,25 +280,21 @@ class _EditActivityTabState extends State<EditActivityTab> {
             return null;
           }
         },
-        onSaved: (value) => setState(() => location = value!),
+        onSaved: (value) => setState(() => destination = value!),
       );
 
-  Widget buildCategory() => DropdownMenu<String>(
-        width: MediaQuery.of(context).size.width * 0.9,
-        hintText: "Select Category",
-        // initialSelection: categories.first,
-        onSelected: (String? value) {
-          // This is called when the user selects an item.
-          setState(() {
-            dropdownValue = value!;
-          });
-        },
-        initialSelection: dropdownValue,
-        dropdownMenuEntries:
-            categoriesDropdown.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
-        }).toList(),
-      );
+  // Widget buildCategory() => DropdownMenu<String>(
+  //       width: MediaQuery.of(context).size.width * 0.9,
+  //       hintText: "Select Category",
+  //       // initialSelection: categories.first,
+  //       onSelected: (String? value) {
+  //         // This is called when the user selects an item.
+  //         setState(() {
+  //           dropdownValue = value!;
+  //         });
+  //       },
+  //       onSaved: (value) => setState(() => destination = value!),
+  //     );
 
   Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(
         padding: const EdgeInsets.all(10),
@@ -291,37 +384,76 @@ class _EditActivityTabState extends State<EditActivityTab> {
         ),
       );
 
+  Widget buildCategory() => DropdownMenu<String>(
+        hintText: "Select Category",
+        // initialSelection: categories.first,
+        onSelected: (String? value) {
+          // This is called when the user selects an item.
+          setState(() {
+            dropdownValue = value!;
+          });
+        },
+        initialSelection: dropdownValue,
+        dropdownMenuEntries:
+            categoryNames.map<DropdownMenuEntry<String>>((String value) {
+          return DropdownMenuEntry<String>(value: value, label: value);
+        }).toList(),
+      );
+
+  Future resetForm() async {
+    setState(() {
+      _activityTitleController = TextEditingController();
+      _activityDescController = TextEditingController();
+      _activityDestinationController = TextEditingController();
+      dropdownValue = "";
+      startdate = null;
+      starttime = null;
+      enddate = null;
+      endtime = null;
+    });
+
+    _formKey.currentState!.reset();
+  }
+
   Widget buildResetButton() => Builder(
         builder: (context) => ElevatedButton(
           child: const Text('Reset'),
-          onPressed: () {
-            _formKey.currentState!.reset();
-          },
+          onPressed: resetForm,
         ),
       );
 
   Widget buildSubmitButton() => Builder(
         builder: (context) => ElevatedButton(
           child: const Text('Submit'),
-          onPressed: () async {
-            final isValid = _formKey.currentState!.validate();
-            FocusScope.of(context).unfocus();
-
-            if (isValid) {
-              _formKey.currentState!.save();
-
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                duration: Duration(seconds: 5),
-                content: Text('Form Submitted'),
-              ));
-
-              // setState(() {
-              //   date = null;
-              //   time = null;
-              // });
-              _formKey.currentState!.reset();
-            }
-          },
+          onPressed: submitForm,
         ),
       );
+
+// pop up dialog
+  Future<void> showConfirmationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button to close the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Activity Created Successfully'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Closes the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

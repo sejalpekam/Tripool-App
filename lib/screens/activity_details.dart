@@ -61,11 +61,14 @@ class _DetailsPageState extends State<DetailsPage> {
                 size: 40,
               ),
               onPressed: () {
-                bool isCreator = currUser!.uid == Creator;
-                //TODO: Nav to MemberList when widget is done
-                  Navigator.push(
+                final isCreator = Creator == currUser?.uid;
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MembersPage(isCreator: isCreator, activityId: widget.activityId,)),
+                  MaterialPageRoute(
+                      builder: (context) => MembersPage(
+                            isCreator: isCreator,
+                            activityId: widget.activityId,
+                          )),
                 );
               });
 
@@ -93,22 +96,6 @@ class _DetailsPageState extends State<DetailsPage> {
           );
 
           var actionButtons = [memberListButton, requestJoinButton];
-
-          if (Creator == currUser?.uid) {
-            actionButtons = [
-              memberListButton,
-              OutlinedButton(
-                  child: Text('Edit Activity'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              EditActivityTab(activityId: widget.activityId)),
-                    );
-                  }),
-            ];
-          }
 
           if (Requests.contains(currUser?.uid)) {
             actionButtons = [
@@ -157,6 +144,22 @@ class _DetailsPageState extends State<DetailsPage> {
                     });
                   },
                   child: Text('Leave Group'))
+            ];
+          }
+
+          if (Creator == currUser?.uid) {
+            actionButtons = [
+              memberListButton,
+              OutlinedButton(
+                  child: Text('Edit Activity'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditActivityTab(activityId: widget.activityId)),
+                    );
+                  }),
             ];
           }
 
@@ -284,7 +287,9 @@ class _DetailsPageState extends State<DetailsPage> {
                             selectable: false,
                           ),
                         ]),
-                        SizedBox(width: 40,),
+                        SizedBox(
+                          width: 40,
+                        ),
                         Column(children: [
                           const Text('Creator',
                               style: TextStyle(

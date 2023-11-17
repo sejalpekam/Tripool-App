@@ -14,6 +14,7 @@ List<String> categories = <String>[
 ];
 
 User? user = FirebaseAuth.instance.currentUser;
+
 class CreateActivityTab extends StatefulWidget {
   const CreateActivityTab({super.key});
 
@@ -24,91 +25,95 @@ class CreateActivityTab extends StatefulWidget {
 class _CreateActivityTabState extends State<CreateActivityTab> {
   // controllers for input
   var _activityTitleController = TextEditingController();
-  var  _activityDescController = TextEditingController();
-  var  _activityDestinationController = TextEditingController();
+  var _activityDescController = TextEditingController();
+  var _activityDestinationController = TextEditingController();
 
-
- @override
-void dispose() {
-  _activityTitleController.dispose();
-  _activityDescController.dispose();
-  _activityDestinationController.dispose();
-  super.dispose();
-}
-
-
-Future submitForm() async {
-  print("Submit button clicked");
-  final isValid = _formKey.currentState!.validate();
-  if (!isValid) {
-    return; // If the form is not valid, do not proceed.
+  @override
+  void dispose() {
+    _activityTitleController.dispose();
+    _activityDescController.dispose();
+    _activityDestinationController.dispose();
+    super.dispose();
   }
 
-  var userData = await FirebaseFirestore.instance.collection('Users').doc(user?.uid).get();
+  Future submitForm() async {
+    print("Submit button clicked");
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      return; // If the form is not valid, do not proceed.
+    }
 
+    var userData = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(user?.uid)
+        .get();
 
-  String userName = userData.get('Name') as String;
+    String userName = userData.get('Name') as String;
 
-  // Extracting data from controllers
-  String activityTitle = _activityTitleController.text.trim();
-  String activityDescription = _activityDescController.text.trim();
-  String activityDestination = _activityDestinationController.text.trim();
-  String category = dropdownValue;
-  String? creatorId = user?.uid;
+    // Extracting data from controllers
+    String activityTitle = _activityTitleController.text.trim();
+    String activityDescription = _activityDescController.text.trim();
+    String activityDestination = _activityDestinationController.text.trim();
+    String category = dropdownValue;
+    String? creatorId = user?.uid;
 
-  // Combine date and time for start and end
-  DateTime? combinedStartDate = combineDateTime(startdate, starttime);
-  DateTime? combinedEndDate = combineDateTime(enddate, endtime);
+    // Combine date and time for start and end
+    DateTime? combinedStartDate = combineDateTime(startdate, starttime);
+    DateTime? combinedEndDate = combineDateTime(enddate, endtime);
 
-  // Convert DateTime to Timestamp for Firestore
-  Timestamp startTimestamp = Timestamp.fromDate(combinedStartDate ?? DateTime.now());
-  Timestamp endTimestamp = Timestamp.fromDate(combinedEndDate ?? DateTime.now());
+    // Convert DateTime to Timestamp for Firestore
+    Timestamp startTimestamp =
+        Timestamp.fromDate(combinedStartDate ?? DateTime.now());
+    Timestamp endTimestamp =
+        Timestamp.fromDate(combinedEndDate ?? DateTime.now());
 
+    // Calling addActivityDetails function with the collected data
+    await addActivityDetails(
+        activityTitle,
+        activityDescription,
+        activityDestination,
+        startTimestamp,
+        endTimestamp,
+        category,
+        creatorId!,
+        userName);
 
-  // Calling addActivityDetails function with the collected data
-  await addActivityDetails(
-    activityTitle,
-    activityDescription,
-    activityDestination,
-    startTimestamp,
-    endTimestamp,
-    category,
-    creatorId!,
-    userName
-  );
+    // Show confirmation dialog
+    await showConfirmationDialog();
 
-   // Show confirmation dialog
-  await showConfirmationDialog();
+    // Optionally reset the form
+    resetForm();
+  }
 
-  // Optionally reset the form
-  resetForm();
-}
+  DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
+    if (date == null || time == null) return null;
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
 
-DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
-  if (date == null || time == null) return null;
-  return DateTime(date.year, date.month, date.day, time.hour, time.minute);
-}
-
-
-
-Future addActivityDetails(String activityTitle, String activityDescription, String activityDestination, Timestamp startDate, Timestamp endDate, String category, String creatorId, String userName) async {
-  await FirebaseFirestore.instance.collection('Activity').add({
-    'Activity_Description': activityDescription,
-    'Activity_Name': activityTitle,
-    'Category': category,
-    'Creator': creatorId,
-    'CreatorName': userName,
-    'Destination': activityDestination,
-    'From': startDate,
-    'To': endDate,
-    'Members': [], // Initialize as empty array
-    'Requests': []  // Initialize as empty array
-  });
-}
-
-
-
-
+  Future addActivityDetails(
+      String activityTitle,
+      String activityDescription,
+      String activityDestination,
+      Timestamp startDate,
+      Timestamp endDate,
+      String category,
+      String creatorId,
+      String userName) async {
+    await FirebaseFirestore.instance.collection('Activity').add({
+      'Activity_Description': activityDescription,
+      'Activity_Name': activityTitle,
+      'Category': category,
+      'Creator': creatorId,
+      'CreatorName': userName,
+      'Destination': activityDestination,
+      'From': startDate,
+      'To': endDate,
+      'Members': [
+        FirebaseAuth.instance.currentUser!.uid
+      ], // Initialize as empty array
+      'Requests': [] // Initialize as empty array
+    });
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -225,12 +230,10 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         onSaved: (value) => setState(() => desc = value!),
       );
 
-
   Widget buildDestination() => TextFormField(
         controller: _activityDestinationController,
         decoration: const InputDecoration(
           labelText: 'Activity Destination',
-
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -346,7 +349,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
       );
 
   Widget buildCategory() => DropdownMenu<String>(
-      hintText: "Select Category",
+        hintText: "Select Category",
         // initialSelection: categories.first,
         onSelected: (String? value) {
           // This is called when the user selects an item.
@@ -360,29 +363,27 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         }).toList(),
       );
 
-    Future resetForm() async {
-      setState(() {
-        _activityTitleController = TextEditingController();
-        _activityDescController = TextEditingController();
-        _activityDestinationController = TextEditingController();
-        dropdownValue = "";
-        startdate = null;
-        starttime = null;
-        enddate = null;
-        endtime = null;
-      });
+  Future resetForm() async {
+    setState(() {
+      _activityTitleController = TextEditingController();
+      _activityDescController = TextEditingController();
+      _activityDestinationController = TextEditingController();
+      dropdownValue = "";
+      startdate = null;
+      starttime = null;
+      enddate = null;
+      endtime = null;
+    });
 
-  _formKey.currentState!.reset();
-}
-
+    _formKey.currentState!.reset();
+  }
 
   Widget buildResetButton() => Builder(
-    builder: (context) => ElevatedButton(
-      child: const Text('Reset'),
-      onPressed: resetForm,
-    ),
-  );
-
+        builder: (context) => ElevatedButton(
+          child: const Text('Reset'),
+          onPressed: resetForm,
+        ),
+      );
 
   Widget buildSubmitButton() => Builder(
         builder: (context) => ElevatedButton(
@@ -391,34 +392,31 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         ),
       );
 
-// pop up dialog 
-Future<void> showConfirmationDialog() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // User must tap button to close the dialog
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Confirmation'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('Activity Created Successfully'),
-            ],
+// pop up dialog
+  Future<void> showConfirmationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button to close the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Activity Created Successfully'),
+              ],
+            ),
           ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Closes the dialog
-            },
-          ),
-        ],
-      );
-    },
-  );
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Closes the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
-
-}
-
-

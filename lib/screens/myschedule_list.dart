@@ -25,7 +25,7 @@ class _MyActivityListState extends State<MyActivityList> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('Activity')
-          .where('Creator', isEqualTo: user?.uid)
+          .where('Members', arrayContains: user?.uid)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -39,7 +39,7 @@ class _MyActivityListState extends State<MyActivityList> {
           return Text('No data found');
         }
 
-        List<Event> created_events = snapshot.data!.docs.map((doc) {
+        List<Event> joined_events = snapshot.data!.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           DateTime FromDateTime = data['From'].toDate();
           DateTime ToDateTime = data['To'].toDate();
@@ -63,7 +63,7 @@ class _MyActivityListState extends State<MyActivityList> {
         return StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('Activity')
-              .where('Members', arrayContains: user?.uid)
+              .where('Requests', arrayContains: user?.uid)
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -77,7 +77,7 @@ class _MyActivityListState extends State<MyActivityList> {
               return Text('No data found');
             }
 
-            List<Event> joined_events = snapshot.data!.docs.map((doc) {
+            List<Event> requested_events = snapshot.data!.docs.map((doc) {
               Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
               DateTime FromDateTime = data['From'].toDate();
               DateTime ToDateTime = data['To'].toDate();
@@ -98,76 +98,36 @@ class _MyActivityListState extends State<MyActivityList> {
               );
             }).toList();
 
-            return StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('Activity')
-                  .where('Requests', arrayContains: user?.uid)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
+            List<Event> combinedEvents = [...joined_events, ...requested_events];
 
-                if (!snapshot.hasData || snapshot.data == null) {
-                  return Text('No data found');
-                }
-
-                List<Event> requested_events = snapshot.data!.docs.map((doc) {
-                  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                  DateTime FromDateTime = data['From'].toDate();
-                  DateTime ToDateTime = data['To'].toDate();
-                  String name = data['Activity_Name'];
-
-                  return Event(
-                    title: data['Activity_Name'],
-                    description: data['Activity_Description'],
-                    host: data['Creator'],
-                    hostname: data['CreatorName'],
-                    location: data['Destination'],
-                    startdate: DateFormat('dd MMM yyyy').format(FromDateTime),
-                    starttime: DateFormat.jm().format(FromDateTime),
-                    enddate: DateFormat('dd MMM yyyy').format(ToDateTime),
-                    endtime: DateFormat.jm().format(ToDateTime),
-                    id: doc.id,
-                    categoryIds: [0, categoryindex[data["Category"]]],
-                  );
-                }).toList();
-
-                List<Event> combinedEvents = [...created_events, ...joined_events, ...requested_events];
-
-                return Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    child: Consumer<AppState>(
-                      builder: (context, appState, _) => SingleChildScrollView(
-                        child: Column(
-                          children: <Widget>[
-                            for (final event in combinedEvents
-                                .where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DetailsPage(activityId: event.id),
-                                      ),
-                                    );
-                                  });
-                                },
-                                child: EventWidget(event: event),
-                              ),
-                          ],
-                        ),
-                      ),
+            return Expanded(
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Consumer<AppState>(
+                  builder: (context, appState, _) => SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        for (final event in combinedEvents
+                            .where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailsPage(activityId: event.id),
+                                  ),
+                                );
+                              });
+                            },
+                            child: EventWidget(event: event),
+                          ),
+                      ],
                     ),
                   ),
-                );
-              },
+                ),
+              ),
             );
           },
         );
