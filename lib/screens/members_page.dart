@@ -19,7 +19,6 @@ class _MembersPageState extends State<MembersPage> {
 
   // Placeholder data for requests
   List<String> requests = [];
-  int membersCount = 0;
 
   // Fetch activity data from Firestore and store it in a map
   Stream<Map<String, dynamic>> fetchActivityData() {
@@ -38,19 +37,28 @@ class _MembersPageState extends State<MembersPage> {
     return querySnapshot.docs.toList();
   }
 
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> fetchRequestersData(
+      List<String> requesterIds) async {
+    final querySnapshot = await _firestore
+        .collection('Users')
+        .where(FieldPath.documentId, whereIn: requesterIds)
+        .get();
+    return querySnapshot.docs.toList();
+  }
+
   Stream<int> fetchMembersCount() {
     return fetchActivityData()
         .map((event) => List.from(event['Members'] ?? []).length);
   }
 
+  Stream<int> fetchRequestsCount() {
+    return fetchActivityData()
+        .map((event) => List.from(event['Requests'] ?? []).length);
+  }
+
   @override
   void initState() {
     super.initState();
-    fetchMembersCount().forEach((count) {
-      setState(() {
-        membersCount = count;
-      });
-    });
   }
 
   @override
@@ -86,11 +94,18 @@ class _MembersPageState extends State<MembersPage> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Requests (${requests.length})',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
+                        StreamBuilder<int>(
+                            stream: fetchRequestsCount(),
+                            builder: (context, snapshot) {
+                              if (snapshot.data == null) {
+                                return Text('Requests (0)');
+                              }
+                              return Text(
+                                'Requests (${snapshot.data})',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              );
+                            }),
                         SizedBox(
                           height: 256,
                           child: SingleChildScrollView(
@@ -137,15 +152,105 @@ class _MembersPageState extends State<MembersPage> {
                                                 Row(
                                                   children: [
                                                     ElevatedButton(
-                                                      onPressed: () {
-                                                        // Logic to accept the requested member
+                                                      onPressed: () async {
+                                                        final userDoc =
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'Users')
+                                                                .doc(snapshot
+                                                                    .data!.id);
+
+                                                        await userDoc.update({
+                                                          'Requested_Activities':
+                                                              (userData['Requested_Activities']
+                                                                      as List<
+                                                                          dynamic>)
+                                                                  .where((req) =>
+                                                                      req !=
+                                                                      widget
+                                                                          .activityId),
+                                                        });
+                                                        await userDoc.update({
+                                                          'Joined_Activities': [
+                                                            ...(userData[
+                                                                    'Joined_Activities']
+                                                                as List<
+                                                                    dynamic>),
+                                                            widget.activityId
+                                                          ],
+                                                        });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'Activity')
+                                                            .doc(widget
+                                                                .activityId)
+                                                            .update({
+                                                          'Requests': (activityData[
+                                                                      'Requests']
+                                                                  as List<
+                                                                      dynamic>)
+                                                              .where((req) =>
+                                                                  req !=
+                                                                  snapshot
+                                                                      .data!.id)
+                                                        });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'Activity')
+                                                            .doc(widget
+                                                                .activityId)
+                                                            .update({
+                                                          'Members': [
+                                                            ...(activityData[
+                                                                    'Members']
+                                                                as List<
+                                                                    dynamic>),
+                                                            snapshot.data!.id
+                                                          ]
+                                                        });
                                                       },
                                                       child: Text('Accept'),
                                                     ),
                                                     SizedBox(width: 8),
                                                     ElevatedButton(
-                                                      onPressed: () {
-                                                        // Logic to reject the requested member
+                                                      onPressed: () async {
+                                                        final userDoc =
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'Users')
+                                                                .doc(snapshot
+                                                                    .data!.id);
+
+                                                        await userDoc.update({
+                                                          'Requested_Activities':
+                                                              (userData['Requested_Activities']
+                                                                      as List<
+                                                                          dynamic>)
+                                                                  .where((req) =>
+                                                                      req !=
+                                                                      widget
+                                                                          .activityId),
+                                                        });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'Activity')
+                                                            .doc(widget
+                                                                .activityId)
+                                                            .update({
+                                                          'Requests': (activityData[
+                                                                      'Requests']
+                                                                  as List<
+                                                                      dynamic>)
+                                                              .where((req) =>
+                                                                  req !=
+                                                                  snapshot
+                                                                      .data!.id)
+                                                        });
                                                       },
                                                       child: Text('Reject'),
                                                     ),
@@ -171,10 +276,17 @@ class _MembersPageState extends State<MembersPage> {
               ),
 
             // Members Section
-            Text(
-              'Members ($membersCount)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            StreamBuilder<Object>(
+                stream: fetchMembersCount(),
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) {
+                    return Text('Members (0)');
+                  }
+                  return Text(
+                    'Members (${snapshot.data})',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  );
+                }),
             Expanded(
               child: StreamBuilder<Map<String, dynamic>>(
                 stream: fetchActivityData(),
