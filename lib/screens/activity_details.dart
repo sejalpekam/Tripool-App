@@ -97,22 +97,6 @@ class _DetailsPageState extends State<DetailsPage> {
 
           var actionButtons = [memberListButton, requestJoinButton];
 
-          if (Creator == currUser?.uid) {
-            actionButtons = [
-              memberListButton,
-              OutlinedButton(
-                  child: Text('Edit Activity'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              EditActivityTab(activityId: widget.activityId)),
-                    );
-                  }),
-            ];
-          }
-
           if (Requests.contains(currUser?.uid)) {
             actionButtons = [
               memberListButton,
@@ -160,6 +144,22 @@ class _DetailsPageState extends State<DetailsPage> {
                     });
                   },
                   child: Text('Leave Group'))
+            ];
+          }
+
+          if (Creator == currUser?.uid) {
+            actionButtons = [
+              memberListButton,
+              OutlinedButton(
+                  child: Text('Edit Activity'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditActivityTab(activityId: widget.activityId)),
+                    );
+                  }),
             ];
           }
 
