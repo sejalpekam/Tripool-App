@@ -41,6 +41,11 @@ Future submitForm() async {
   if (!isValid) {
     return; // If the form is not valid, do not proceed.
   }
+   // Check if the date and time fields are filled
+  if (startdate == null || starttime == null || enddate == null || endtime == null) {
+    await showDateTimeMissingDialog();
+    return;
+  }
 
   // Extracting data from controllers
   String activityTitle = _activityTitleController.text.trim();
@@ -72,6 +77,34 @@ Future submitForm() async {
 
   // Optionally reset the form
   _formKey.currentState!.reset();
+}
+
+// error dialog for Time/Date
+Future<void> showDateTimeMissingDialog() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // User must tap button to close the dialog
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Missing Information'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Please fill out Start Date/Time and End Date/Time.'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Closes the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
 DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
