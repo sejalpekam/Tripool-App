@@ -48,6 +48,7 @@ class _ProfileTabState extends State<ProfileTab> {
     _emailController.dispose();
     super.dispose();
   }
+
   // edit function
    void editInfo() async {
     
@@ -58,6 +59,7 @@ class _ProfileTabState extends State<ProfileTab> {
   void logOut() async {
   await FirebaseAuth.instance.signOut();
   }
+
 
 
   @override
@@ -101,7 +103,9 @@ class _ProfileTabState extends State<ProfileTab> {
                 width: 100, // Adjust the width as needed
                 child: _buildEditableField('Name', _nameController),
               ),
+
               SizedBox(width: 80), // Optional spacing between fields
+
               SizedBox(
                 width: 150,
                 child: ActivitiesContainer(
@@ -129,6 +133,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       buildLogOutButton(),
                     ],
                   ),
+
         ],
       ),
     );
@@ -147,6 +152,7 @@ class _ProfileTabState extends State<ProfileTab> {
     );
   }
 
+
   // edit button
   Widget buildEditButton() => Builder(
     builder: (context) => ElevatedButton(
@@ -162,6 +168,7 @@ class _ProfileTabState extends State<ProfileTab> {
       onPressed: logOut, // Call the logOut method here
     ),
   );
+
 
 
 }

@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+Map<String, int> categoryindex = {
+  "All": 0,
+  "Events": 1,
+  "Meetup": 2,
+  "Outdoor": 3,
+  "Sports": 4,
+  "Other": 5
+};
+
 class Category {
   final int categoryId;
   final String name;
@@ -24,7 +33,7 @@ final entertainmentCategory = Category(
 final meetUpCategory = Category(
   categoryId: 2,
   name: "Meetup",
-  icon: Icons.location_on,
+  icon: Icons.groups_2,
 );
 
 final outdoorCategory = Category(

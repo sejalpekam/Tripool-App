@@ -7,6 +7,7 @@ class Event {
       enddate,
       endtime,
       host,
+      hostname,
       id;
   final List categoryIds;
 
@@ -20,7 +21,8 @@ class Event {
       required this.enddate,
       required this.endtime,
       required this.categoryIds,
-      required this.host});
+      required this.host,
+      required this.hostname});
 }
 
 final fiveKmRunEvent = Event(
@@ -32,6 +34,7 @@ final fiveKmRunEvent = Event(
     enddate: "11/17/2023",
     endtime: "12:00 PM",
     host: "Host Name",
+    hostname: "host name",
     id: '5235923grg',
     categoryIds: [0, 1]);
 

@@ -61,7 +61,7 @@ class EventWidget extends StatelessWidget {
                                 width: 5,
                               ),
                               Text(
-                                event.host,
+                                event.hostname,
                                 style: eventLocationTextStyle.copyWith(fontSize: 15.0),
                               ),
                             ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tripool_app/app_state.dart';
+import 'package:tripool_app/model/category.dart';
 import 'package:tripool_app/model/event.dart';
 import 'package:tripool_app/screens/activity_details.dart';
 import 'package:tripool_app/widgets/event_widget.dart';
@@ -33,6 +34,8 @@ class _ActivityListState extends State<ActivityList> {
           return Text('No data found');
         }
 
+        
+
         List<Event> events = snapshot.data!.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           DateTime FromDateTime = data['From'].toDate();
@@ -41,38 +44,46 @@ class _ActivityListState extends State<ActivityList> {
             title: data['Activity_Name'],
             description: data['Activity_Description'],
             host: data['Creator'],
+            hostname: data['CreatorName'],
             location: data['Destination'],
             startdate: DateFormat('dd MMM yyyy').format(FromDateTime),
             starttime: DateFormat.jm().format(FromDateTime),
             enddate: DateFormat('dd MMM yyyy').format(ToDateTime),
             endtime: DateFormat.jm().format(ToDateTime),
             id: doc.id,
-            categoryIds: [0, 1],
+            categoryIds: [0, categoryindex[data["Category"]]],
           );
         }).toList();
-
-        return Container(
-          height: 400,
-          child: ListView.builder(
-            itemCount: events.length,
-            itemBuilder: (context, index) {
-              return InkWell(
-                onTap: () {
-                  setState(() {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DetailsPage(activityId: events[index].id),
-                      ),
-                    );
-                  });
-                },
-                child: EventWidget(event: events[index]),
-              );
-            },
-          ),
-        );
+        
+        return Expanded(
+          child: Container(
+            margin: EdgeInsets.all(10) ,
+            child: Consumer<AppState>(
+              builder: (context, appState, _) => 
+              SingleChildScrollView(
+                child: Column(
+                  children: <Widget> [
+                    for (final event in events.where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
+                     InkWell(
+                      onTap: () {
+                        setState(() {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DetailsPage(activityId: event.id),
+                            ),
+                          );
+                        });
+                      },
+                      child: EventWidget(event: event),
+                    )]),
+              )
+                
+              ),
+            ),
+          );
+        
       },
     );
   }

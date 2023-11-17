@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tripool_app/app_state.dart';
 import 'package:tripool_app/model/category.dart';
+import 'package:tripool_app/screens/members_page.dart';
 import 'package:tripool_app/screens/tabs/edit_tab.dart';
 import 'package:tripool_app/widgets/category_widget.dart';
 import 'package:tripool_app/widgets/loading_widget.dart';
@@ -60,11 +61,15 @@ class _DetailsPageState extends State<DetailsPage> {
                 size: 40,
               ),
               onPressed: () {
-                //TODO: Nav to MemberList when widget is done
-                //   Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const MemberList(widget.activityId)),
-                // );
+                final isCreator = Creator == currUser?.uid;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MembersPage(
+                            isCreator: isCreator,
+                            activityId: widget.activityId,
+                          )),
+                );
               });
 
           var requestJoinButton = OutlinedButton(
@@ -91,22 +96,6 @@ class _DetailsPageState extends State<DetailsPage> {
           );
 
           var actionButtons = [memberListButton, requestJoinButton];
-
-          if (Creator == currUser?.uid) {
-            actionButtons = [
-              memberListButton,
-              OutlinedButton(
-                  child: Text('Manage Activity'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              EditActivityTab(activityId: widget.activityId)),
-                    );
-                  }),
-            ];
-          }
 
           if (Requests.contains(currUser?.uid)) {
             actionButtons = [
@@ -155,6 +144,22 @@ class _DetailsPageState extends State<DetailsPage> {
                     });
                   },
                   child: Text('Leave Group'))
+            ];
+          }
+
+          if (Creator == currUser?.uid) {
+            actionButtons = [
+              memberListButton,
+              OutlinedButton(
+                  child: Text('Edit Activity'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              EditActivityTab(activityId: widget.activityId)),
+                    );
+                  }),
             ];
           }
 
@@ -222,9 +227,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(DateFormat.jms().format(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    From.toDate().millisecondsSinceEpoch))),
+                            child: Text(DateFormat.jm().format(From.toDate())),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -241,9 +244,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(DateFormat.jms().format(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    To.toDate().millisecondsSinceEpoch))),
+                            child: Text(DateFormat.jm().format(To.toDate())),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -256,6 +257,8 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ],
                   ),
+                  // Add this SizedBox for spacing
+                  SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -267,6 +270,8 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 20),
+                  Divider(thickness: 1.5),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -282,6 +287,9 @@ class _DetailsPageState extends State<DetailsPage> {
                             selectable: false,
                           ),
                         ]),
+                        SizedBox(
+                          width: 40,
+                        ),
                         Column(children: [
                           const Text('Creator',
                               style: TextStyle(
@@ -309,24 +317,20 @@ class _DetailsPageState extends State<DetailsPage> {
                                   onPressed: () {
                                     // ON RPESS
                                   },
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 10),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 0, 0, 10),
-                                            child: Icon(Icons.person, size: 40),
-                                          ),
-                                          Text(Name,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14))
-                                        ]),
-                                  ),
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 0, 10),
+                                          child: Icon(Icons.person, size: 45),
+                                        ),
+                                        Text(Name,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14))
+                                      ]),
                                 );
                               }),
                         ]),
