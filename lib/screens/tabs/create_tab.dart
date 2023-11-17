@@ -1,19 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 List<String> categories = <String>[
-  'Events',
+  'Entertainment',
   'Outdoor',
   'Sports',
   'Trip',
   'Meetup',
   'Other'
 ];
-
-User? user = FirebaseAuth.instance.currentUser;
 
 class CreateActivityTab extends StatefulWidget {
   const CreateActivityTab({super.key});
@@ -25,95 +22,115 @@ class CreateActivityTab extends StatefulWidget {
 class _CreateActivityTabState extends State<CreateActivityTab> {
   // controllers for input
   var _activityTitleController = TextEditingController();
-  var _activityDescController = TextEditingController();
-  var _activityDestinationController = TextEditingController();
+  var  _activityDescController = TextEditingController();
+  var  _activityDestinationController = TextEditingController();
 
-  @override
-  void dispose() {
-    _activityTitleController.dispose();
-    _activityDescController.dispose();
-    _activityDestinationController.dispose();
-    super.dispose();
+
+ @override
+void dispose() {
+  _activityTitleController.dispose();
+  _activityDescController.dispose();
+  _activityDestinationController.dispose();
+  super.dispose();
+}
+
+
+Future submitForm() async {
+  print("Submit button clicked");
+  final isValid = _formKey.currentState!.validate();
+  if (!isValid) {
+    return; // If the form is not valid, do not proceed.
+  }
+   // Check if the date and time fields are filled
+  if (startdate == null || starttime == null || enddate == null || endtime == null) {
+    await showDateTimeMissingDialog();
+    return;
   }
 
-  Future submitForm() async {
-    print("Submit button clicked");
-    final isValid = _formKey.currentState!.validate();
-    if (!isValid) {
-      return; // If the form is not valid, do not proceed.
-    }
+  // Extracting data from controllers
+  String activityTitle = _activityTitleController.text.trim();
+  String activityDescription = _activityDescController.text.trim();
+  String activityDestination = _activityDestinationController.text.trim();
+  String category = dropdownValue;
 
-    var userData = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(user?.uid)
-        .get();
+  // Combine date and time for start and end
+  DateTime? combinedStartDate = combineDateTime(startdate, starttime);
+  DateTime? combinedEndDate = combineDateTime(enddate, endtime);
 
-    String userName = userData.get('Name') as String;
+  // Convert DateTime to Timestamp for Firestore
+  Timestamp startTimestamp = Timestamp.fromDate(combinedStartDate ?? DateTime.now());
+  Timestamp endTimestamp = Timestamp.fromDate(combinedEndDate ?? DateTime.now());
 
-    // Extracting data from controllers
-    String activityTitle = _activityTitleController.text.trim();
-    String activityDescription = _activityDescController.text.trim();
-    String activityDestination = _activityDestinationController.text.trim();
-    String category = dropdownValue;
-    String? creatorId = user?.uid;
+  // Calling addActivityDetails function with the collected data
+  await addActivityDetails(
+    activityTitle,
+    activityDescription,
+    activityDestination,
+    startTimestamp,
+    endTimestamp,
+    category,
+    "" // Creator is an empty string as per your instruction
+  );
 
-    // Combine date and time for start and end
-    DateTime? combinedStartDate = combineDateTime(startdate, starttime);
-    DateTime? combinedEndDate = combineDateTime(enddate, endtime);
+   // Show confirmation dialog
+  await showConfirmationDialog();
 
-    // Convert DateTime to Timestamp for Firestore
-    Timestamp startTimestamp =
-        Timestamp.fromDate(combinedStartDate ?? DateTime.now());
-    Timestamp endTimestamp =
-        Timestamp.fromDate(combinedEndDate ?? DateTime.now());
+  // Optionally reset the form
+  _formKey.currentState!.reset();
+}
 
-    // Calling addActivityDetails function with the collected data
-    await addActivityDetails(
-        activityTitle,
-        activityDescription,
-        activityDestination,
-        startTimestamp,
-        endTimestamp,
-        category,
-        creatorId!,
-        userName);
+// error dialog for Time/Date
+Future<void> showDateTimeMissingDialog() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // User must tap button to close the dialog
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Missing Information'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Please fill out Start Date/Time and End Date/Time.'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Closes the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
-    // Show confirmation dialog
-    await showConfirmationDialog();
+DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
+  if (date == null || time == null) return null;
+  return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+}
 
-    // Optionally reset the form
-    resetForm();
-  }
 
-  DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
-    if (date == null || time == null) return null;
-    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
-  }
 
-  Future addActivityDetails(
-      String activityTitle,
-      String activityDescription,
-      String activityDestination,
-      Timestamp startDate,
-      Timestamp endDate,
-      String category,
-      String creatorId,
-      String userName) async {
-    await FirebaseFirestore.instance.collection('Activity').add({
-      'Activity_Description': activityDescription,
-      'Activity_Name': activityTitle,
-      'Category': category,
-      'Creator': creatorId,
-      'CreatorName': userName,
-      'Destination': activityDestination,
-      'From': startDate,
-      'To': endDate,
-      'Members': [
-        FirebaseAuth.instance.currentUser!.uid
-      ], // Initialize as empty array
-      'Requests': [] // Initialize as empty array
-    });
-  }
+Future addActivityDetails(String activityTitle, String activityDescription, String activityDestination, Timestamp startDate, Timestamp endDate, String category, String creator) async {
+  await FirebaseFirestore.instance.collection('Activity').add({
+    'Activity_Description': activityDescription,
+    'Activity_Name': activityTitle,
+    'Category': category,
+    'Creator': creator,
+    'Destination': activityDestination,
+    'From': startDate,
+    'To': endDate,
+    'Members': [], // Initialize as empty array
+    'Requests': []  // Initialize as empty array
+  });
+}
+
+
+
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -247,19 +264,6 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
         onSaved: (value) => setState(() => destination = value!),
       );
 
-  // Widget buildCategory() => DropdownMenu<String>(
-  //       width: MediaQuery.of(context).size.width * 0.9,
-  //       hintText: "Select Category",
-  //       // initialSelection: categories.first,
-  //       onSelected: (String? value) {
-  //         // This is called when the user selects an item.
-  //         setState(() {
-  //           dropdownValue = value!;
-  //         });
-  //       },
-  //       onSaved: (value) => setState(() => destination = value!),
-  //     );
-
   Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -349,8 +353,7 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       );
 
   Widget buildCategory() => DropdownMenu<String>(
-        hintText: "Select Category",
-        // initialSelection: categories.first,
+        initialSelection: categories.first,
         onSelected: (String? value) {
           // This is called when the user selects an item.
           setState(() {
@@ -363,27 +366,29 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
         }).toList(),
       );
 
-  Future resetForm() async {
-    setState(() {
-      _activityTitleController = TextEditingController();
-      _activityDescController = TextEditingController();
-      _activityDestinationController = TextEditingController();
-      dropdownValue = "";
-      startdate = null;
-      starttime = null;
-      enddate = null;
-      endtime = null;
-    });
+    Future resetForm() async {
+      setState(() {
+        _activityTitleController = TextEditingController();
+        _activityDescController = TextEditingController();
+        _activityDestinationController = TextEditingController();
+        dropdownValue = categories.first;
+        startdate = null;
+        starttime = null;
+        enddate = null;
+        endtime = null;
+      });
 
-    _formKey.currentState!.reset();
-  }
+  _formKey.currentState!.reset();
+}
+
 
   Widget buildResetButton() => Builder(
-        builder: (context) => ElevatedButton(
-          child: const Text('Reset'),
-          onPressed: resetForm,
-        ),
-      );
+    builder: (context) => ElevatedButton(
+      child: const Text('Reset'),
+      onPressed: resetForm,
+    ),
+  );
+
 
   Widget buildSubmitButton() => Builder(
         builder: (context) => ElevatedButton(
@@ -392,31 +397,34 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
         ),
       );
 
-// pop up dialog
-  Future<void> showConfirmationDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // User must tap button to close the dialog
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirmation'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Activity Created Successfully'),
-              ],
-            ),
+// pop up dialog 
+Future<void> showConfirmationDialog() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // User must tap button to close the dialog
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirmation'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Activity Created Successfully'),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Closes the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Closes the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
+
+}
+
+
