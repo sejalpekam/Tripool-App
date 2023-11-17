@@ -49,6 +49,19 @@ class _ProfileTabState extends State<ProfileTab> {
     super.dispose();
   }
 
+  // edit function
+   void editInfo() async {
+    
+    }
+
+  // logout function:
+
+  void logOut() async {
+  await FirebaseAuth.instance.signOut();
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     if (userProfileData == null) {
@@ -90,7 +103,9 @@ class _ProfileTabState extends State<ProfileTab> {
                 width: 100, // Adjust the width as needed
                 child: _buildEditableField('Name', _nameController),
               ),
-              // SizedBox(width: 300), // Optional spacing between fields
+
+              SizedBox(width: 80), // Optional spacing between fields
+
               SizedBox(
                 width: 150,
                 child: ActivitiesContainer(
@@ -108,6 +123,17 @@ class _ProfileTabState extends State<ProfileTab> {
           _buildEditableField('Description', _descriptionController),
           _buildEditableField('Location', _locationController),
           _buildEditableField('Email', _emailController),
+
+
+          // Edit and logout button
+          Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      buildEditButton(),
+                      buildLogOutButton(),
+                    ],
+                  ),
+
         ],
       ),
     );
@@ -125,6 +151,25 @@ class _ProfileTabState extends State<ProfileTab> {
       ),
     );
   }
+
+
+  // edit button
+  Widget buildEditButton() => Builder(
+    builder: (context) => ElevatedButton(
+      child: const Text('Edit'),
+      onPressed: editInfo,
+    ),
+  );
+
+  // logpout button
+  Widget buildLogOutButton() => Builder(
+    builder: (context) => ElevatedButton(
+      child: const Text('Log Out'),
+      onPressed: logOut, // Call the logOut method here
+    ),
+  );
+
+
 
 }
 

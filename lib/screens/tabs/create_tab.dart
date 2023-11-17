@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 List<String> categories = <String>[
-  'Event',
+  'Events',
   'Outdoor',
   'Sports',
   'Trip',
@@ -86,7 +87,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
     'Activity_Description': activityDescription,
     'Activity_Name': activityTitle,
     'Category': category,
-    'Creator': creator,
+    'Creator': FirebaseAuth.instance.currentUser!.uid,
     'Destination': activityDestination,
     'From': startDate,
     'To': endDate,
@@ -103,7 +104,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
 
   String title = '';
   String desc = '';
-  String location = '';
+  String destination = '';
 
   String dropdownValue = categories.first;
 
@@ -152,7 +153,7 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
                   const SizedBox(height: 10),
                   buildDesc(),
                   const SizedBox(height: 10),
-                  buildLocation(),
+                  buildDestination(),
                   const SizedBox(height: 10),
                   buildCategory(),
                   const SizedBox(height: 10),
@@ -215,13 +216,11 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
       );
 
 
-  // Widget buildDestination() => TextFormField(
-  //       controller: _activityDestinationController,
-
-  Widget buildLocation() => TextFormField(
-
+  Widget buildDestination() => TextFormField(
+        controller: _activityDestinationController,
         decoration: const InputDecoration(
-          labelText: 'Activity location',
+          labelText: 'Activity Destination',
+
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -232,24 +231,21 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
             return null;
           }
         },
-        onSaved: (value) => setState(() => location = value!),
+        onSaved: (value) => setState(() => destination = value!),
       );
 
-  Widget buildCategory() => DropdownMenu<String>(
-        width: MediaQuery.of(context).size.width * 0.9,
-        hintText: "Select Category",
-        // initialSelection: categories.first,
-        onSelected: (String? value) {
-          // This is called when the user selects an item.
-          setState(() {
-            dropdownValue = value!;
-          });
-        },
-        dropdownMenuEntries:
-            categories.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
-        }).toList(),
-      );
+  // Widget buildCategory() => DropdownMenu<String>(
+  //       width: MediaQuery.of(context).size.width * 0.9,
+  //       hintText: "Select Category",
+  //       // initialSelection: categories.first,
+  //       onSelected: (String? value) {
+  //         // This is called when the user selects an item.
+  //         setState(() {
+  //           dropdownValue = value!;
+  //         });
+  //       },
+  //       onSaved: (value) => setState(() => destination = value!),
+  //     );
 
   Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(
         padding: const EdgeInsets.all(10),
@@ -339,26 +335,27 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         ),
       );
 
-  // Widget buildCategory() => DropdownMenu<String>(
-  //       initialSelection: categories.first,
-  //       onSelected: (String? value) {
-  //         // This is called when the user selects an item.
-  //         setState(() {
-  //           dropdownValue = value!;
-  //         });
-  //       },
-  //       dropdownMenuEntries:
-  //           categories.map<DropdownMenuEntry<String>>((String value) {
-  //         return DropdownMenuEntry<String>(value: value, label: value);
-  //       }).toList(),
-  //     );
+  Widget buildCategory() => DropdownMenu<String>(
+      hintText: "Select Category",
+        // initialSelection: categories.first,
+        onSelected: (String? value) {
+          // This is called when the user selects an item.
+          setState(() {
+            dropdownValue = value!;
+          });
+        },
+        dropdownMenuEntries:
+            categories.map<DropdownMenuEntry<String>>((String value) {
+          return DropdownMenuEntry<String>(value: value, label: value);
+        }).toList(),
+      );
 
     Future resetForm() async {
       setState(() {
         _activityTitleController = TextEditingController();
         _activityDescController = TextEditingController();
         _activityDestinationController = TextEditingController();
-        dropdownValue = categories.first;
+        dropdownValue = "";
         startdate = null;
         starttime = null;
         enddate = null;
@@ -413,6 +410,5 @@ Future<void> showConfirmationDialog() async {
 }
 
 }
-
 
 
