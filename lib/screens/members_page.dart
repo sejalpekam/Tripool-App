@@ -6,9 +6,11 @@ class MembersPage extends StatefulWidget {
   final bool isCreator;
   final String activityId;
 
-  const MembersPage(
-      {Key? key, required this.isCreator, required this.activityId})
-      : super(key: key);
+  const MembersPage({
+    Key? key,
+    required this.isCreator,
+    required this.activityId,
+  }) : super(key: key);
 
   @override
   _MembersPageState createState() => _MembersPageState();
@@ -95,17 +97,18 @@ class _MembersPageState extends State<MembersPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         StreamBuilder<int>(
-                            stream: fetchRequestsCount(),
-                            builder: (context, snapshot) {
-                              if (snapshot.data == null) {
-                                return Text('Requests (0)');
-                              }
-                              return Text(
-                                'Requests (${snapshot.data})',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              );
-                            }),
+                          stream: fetchRequestsCount(),
+                          builder: (context, snapshot) {
+                            if (snapshot.data == null) {
+                              return Text('Requests (0)');
+                            }
+                            return Text(
+                              'Requests (${snapshot.data})',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            );
+                          },
+                        ),
                         SizedBox(
                           height: 256,
                           child: SingleChildScrollView(
@@ -132,7 +135,6 @@ class _MembersPageState extends State<MembersPage> {
                                               {};
                                       String userName = userData['Name'];
                                       int userAge = userData['Age'];
-                                      int userRating = userData['Rating'];
 
                                       return Card(
                                         child: InkWell(
@@ -145,9 +147,16 @@ class _MembersPageState extends State<MembersPage> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text('Name: $userName'),
+                                                Text('Name: $userName' +
+                                                    (widget.isCreator &&
+                                                            request ==
+                                                                FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser!
+                                                                    .uid
+                                                        ? ' (Creator)'
+                                                        : '')),
                                                 Text('Age: $userAge'),
-                                                Text('Rating: $userRating'),
                                                 SizedBox(height: 8),
                                                 Row(
                                                   children: [
@@ -277,16 +286,17 @@ class _MembersPageState extends State<MembersPage> {
 
             // Members Section
             StreamBuilder<Object>(
-                stream: fetchMembersCount(),
-                builder: (context, snapshot) {
-                  if (snapshot.data == null) {
-                    return Text('Members (0)');
-                  }
-                  return Text(
-                    'Members (${snapshot.data})',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  );
-                }),
+              stream: fetchMembersCount(),
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return Text('Members (0)');
+                }
+                return Text(
+                  'Members (${snapshot.data})',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                );
+              },
+            ),
             Expanded(
               child: StreamBuilder<Map<String, dynamic>>(
                 stream: fetchActivityData(),
@@ -316,6 +326,7 @@ class _MembersPageState extends State<MembersPage> {
                             scrollDirection: Axis.vertical,
                             child: Column(
                               children: membersData.map((user) {
+                                print('user ==> ${user.data()!['id']}');
                                 final userData = user.data();
                                 String memberName = userData['Name'];
                                 String memberEmail = userData['email'];
@@ -332,13 +343,18 @@ class _MembersPageState extends State<MembersPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(memberName),
+                                          Text('Name: $memberName' +
+                                              (user.id ==
+                                                          activityData[
+                                                              'Creator']
+                                                  ? ' (Creator)'
+                                                  : '')),
                                           SizedBox(height: 8),
-                                          Text(memberEmail),
+                                          Text('Email: $memberEmail'),
                                           SizedBox(height: 8),
                                           Text('Age: $memberAge'),
                                           SizedBox(height: 8),
-                                          Text('Rating: $rating')
+                                          Text('Rating: $rating'),
                                         ],
                                       ),
                                       trailing: widget.isCreator &&
@@ -354,12 +370,13 @@ class _MembersPageState extends State<MembersPage> {
                                                         .doc(user.id);
 
                                                 await userDoc.update({
-                                                  'Joined_Activities': (user.get(
-                                                              'Joined_Activities')
-                                                          as List<dynamic>)
-                                                      .where((req) =>
-                                                          req !=
-                                                          widget.activityId),
+                                                  'Joined_Activities':
+                                                      (userData['Joined_Activities']
+                                                              as List<dynamic>)
+                                                          .where((req) =>
+                                                              req !=
+                                                              widget
+                                                                  .activityId),
                                                 });
                                                 await FirebaseFirestore.instance
                                                     .collection('Activity')
