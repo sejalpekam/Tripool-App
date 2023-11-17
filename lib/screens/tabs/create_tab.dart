@@ -214,10 +214,12 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         onSaved: (value) => setState(() => desc = value!),
       );
 
+
   Widget buildDestination() => TextFormField(
         controller: _activityDestinationController,
         decoration: const InputDecoration(
           labelText: 'Activity Destination',
+
           border: OutlineInputBorder(),
         ),
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -227,6 +229,19 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
           } else {
             return null;
           }
+        },
+        onSaved: (value) => setState(() => location = value!),
+      );
+
+  Widget buildCategory() => DropdownMenu<String>(
+        width: MediaQuery.of(context).size.width * 0.9,
+        hintText: "Select Category",
+        // initialSelection: categories.first,
+        onSelected: (String? value) {
+          // This is called when the user selects an item.
+          setState(() {
+            dropdownValue = value!;
+          })
         },
         onSaved: (value) => setState(() => destination = value!),
       );
@@ -319,19 +334,19 @@ Future addActivityDetails(String activityTitle, String activityDescription, Stri
         ),
       );
 
-  Widget buildCategory() => DropdownMenu<String>(
-        initialSelection: categories.first,
-        onSelected: (String? value) {
-          // This is called when the user selects an item.
-          setState(() {
-            dropdownValue = value!;
-          });
-        },
-        dropdownMenuEntries:
-            categories.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
-        }).toList(),
-      );
+  // Widget buildCategory() => DropdownMenu<String>(
+  //       initialSelection: categories.first,
+  //       onSelected: (String? value) {
+  //         // This is called when the user selects an item.
+  //         setState(() {
+  //           dropdownValue = value!;
+  //         });
+  //       },
+  //       dropdownMenuEntries:
+  //           categories.map<DropdownMenuEntry<String>>((String value) {
+  //         return DropdownMenuEntry<String>(value: value, label: value);
+  //       }).toList(),
+  //     );
 
     Future resetForm() async {
       setState(() {
