@@ -183,6 +183,10 @@ class _EditActivityTabState extends State<EditActivityTab> {
           enddate = endDateTime;
           endtime = TimeOfDay.fromDateTime(enddate!);
 
+          _activityDescController.text = desc;
+          _activityTitleController.text = title;
+          _activityDestinationController.text = destination;
+
           return Scaffold(
             appBar: AppBar(
               title: const Text('Create Activity'),
@@ -389,6 +393,7 @@ class _EditActivityTabState extends State<EditActivityTab> {
             dropdownValue = value!;
           });
         },
+        initialSelection: dropdownValue,
         dropdownMenuEntries:
             categoryNames.map<DropdownMenuEntry<String>>((String value) {
           return DropdownMenuEntry<String>(value: value, label: value);
