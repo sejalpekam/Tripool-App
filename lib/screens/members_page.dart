@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tripool_app/screens/view_profile.dart';
 
 class MembersPage extends StatefulWidget {
   final bool isCreator;
@@ -139,7 +140,14 @@ class _MembersPageState extends State<MembersPage> {
                                       return Card(
                                         child: InkWell(
                                           onTap: () {
-                                            // Add logic for when a request card is tapped
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ViewProfile(
+                                                        CreatorId: request,
+                                                      )),
+                                            );
                                           },
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
@@ -336,7 +344,13 @@ class _MembersPageState extends State<MembersPage> {
                                 return Card(
                                   child: InkWell(
                                     onTap: () {
-                                      // Add logic for when a member card is tapped
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ViewProfile(
+                                                  CreatorId: user.id,
+                                                )),
+                                      );
                                     },
                                     child: ListTile(
                                       title: Column(
@@ -345,8 +359,7 @@ class _MembersPageState extends State<MembersPage> {
                                         children: [
                                           Text('Name: $memberName' +
                                               (user.id ==
-                                                          activityData[
-                                                              'Creator']
+                                                      activityData['Creator']
                                                   ? ' (Creator)'
                                                   : '')),
                                           SizedBox(height: 8),
@@ -370,13 +383,12 @@ class _MembersPageState extends State<MembersPage> {
                                                         .doc(user.id);
 
                                                 await userDoc.update({
-                                                  'Joined_Activities':
-                                                      (userData['Joined_Activities']
-                                                              as List<dynamic>)
-                                                          .where((req) =>
-                                                              req !=
-                                                              widget
-                                                                  .activityId),
+                                                  'Joined_Activities': (userData[
+                                                              'Joined_Activities']
+                                                          as List<dynamic>)
+                                                      .where((req) =>
+                                                          req !=
+                                                          widget.activityId),
                                                 });
                                                 await FirebaseFirestore.instance
                                                     .collection('Activity')
