@@ -82,7 +82,38 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
     await showConfirmationDialog();
 
     // Optionally reset the form
+    _formKey.currentState!.reset();
+
+    // resset all fields
     resetForm();
+  }
+
+// error dialog for Time/Date
+  Future<void> showDateTimeMissingDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button to close the dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Missing Information'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Please fill out Start Date/Time and End Date/Time.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Closes the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   DateTime? combineDateTime(DateTime? date, TimeOfDay? time) {
@@ -247,19 +278,6 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
         onSaved: (value) => setState(() => destination = value!),
       );
 
-  // Widget buildCategory() => DropdownMenu<String>(
-  //       width: MediaQuery.of(context).size.width * 0.9,
-  //       hintText: "Select Category",
-  //       // initialSelection: categories.first,
-  //       onSelected: (String? value) {
-  //         // This is called when the user selects an item.
-  //         setState(() {
-  //           dropdownValue = value!;
-  //         });
-  //       },
-  //       onSaved: (value) => setState(() => destination = value!),
-  //     );
-
   Widget buildStartDate(DateTime? date, TimeOfDay? time) => Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -349,8 +367,7 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       );
 
   Widget buildCategory() => DropdownMenu<String>(
-        hintText: "Select Category",
-        // initialSelection: categories.first,
+        initialSelection: categories.first,
         onSelected: (String? value) {
           // This is called when the user selects an item.
           setState(() {
@@ -368,7 +385,7 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       _activityTitleController = TextEditingController();
       _activityDescController = TextEditingController();
       _activityDestinationController = TextEditingController();
-      dropdownValue = "";
+      dropdownValue = categories.first;
       startdate = null;
       starttime = null;
       enddate = null;
