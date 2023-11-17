@@ -10,13 +10,8 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
- User? user = FirebaseAuth.instance.currentUser;
+  User? user = FirebaseAuth.instance.currentUser;
   DocumentSnapshot? userProfileData;
-
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _locationController = TextEditingController();
-  final _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -28,39 +23,8 @@ class _ProfileTabState extends State<ProfileTab> {
     var userData = await FirebaseFirestore.instance.collection('Users').doc(user?.uid).get();
     setState(() {
       userProfileData = userData;
-      _setDataToControllers(userData);
     });
   }
-
-  void _setDataToControllers(DocumentSnapshot userData) {
-    Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
-    _nameController.text = data['Name'] ?? '';
-    _descriptionController.text = data['Description'] ?? '';
-    _locationController.text = data['Location'] ?? '';
-    _emailController.text = data['email'] ?? '';
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _locationController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  // edit function
-   void editInfo() async {
-    
-    }
-
-  // logout function:
-
-  void logOut() async {
-  await FirebaseAuth.instance.signOut();
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +43,7 @@ class _ProfileTabState extends State<ProfileTab> {
           SizedBox(height: 70),
           CircleAvatar(
             radius: 50,
-            backgroundImage: NetworkImage(data['profileImageUrl'] ?? 'web/kisspng-gandalf-the-lord-of-the-rings-the-fellowship-of-t-gandalf-transparent-png-5a75ecd4c082e6.2548756615176777807885.jpg'),
+            backgroundImage: NetworkImage(data['profileImageUrl'] ?? 'default_image_url.jpg'),
           ),
           SizedBox(height: 10),
           // Rating just below the image
@@ -91,89 +55,36 @@ class _ProfileTabState extends State<ProfileTab> {
             ],
           ),
           SizedBox(height: 10),
-          // Name just below the rating
-          // Name and Activities Container in the same row
+          // Display User Information
+          _buildInfoField('Name', data['Name']),
+          _buildInfoField('Description', data['Description']),
+          _buildInfoField('Location', data['Location']),
+          _buildInfoField('Email', data['email']),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Name field with specified width
-              SizedBox(
-                width: 100, // Adjust the width as needed
-                child: _buildEditableField('Name', _nameController),
-              ),
-
-              SizedBox(width: 80), // Optional spacing between fields
-
-              SizedBox(
-                width: 150,
-                child: ActivitiesContainer(
-                  joinedActivitiesCount: joinedActivitiesCount,
-                  createdActivitiesCount: createdActivitiesCount,
-                ),
-              ),
-            ],
+          ActivitiesContainer(
+            joinedActivitiesCount: joinedActivitiesCount,
+            createdActivitiesCount: createdActivitiesCount,
           ),
-
-          SizedBox(height: 20),
-
-
-          
-          _buildEditableField('Description', _descriptionController),
-          _buildEditableField('Location', _locationController),
-          _buildEditableField('Email', _emailController),
-
-
-          // Edit and logout button
-          Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      buildEditButton(),
-                      buildLogOutButton(),
-                    ],
-                  ),
-
         ],
       ),
     );
   }
-  Widget _buildEditableField(String label, TextEditingController controller) {
+
+  // Function to build non-editable info field
+  Widget _buildInfoField(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-        ),
-        // You can add validators or other properties as needed
+      child: Row(
+        children: [
+          Expanded(child: Text('$label: ', style: TextStyle(fontWeight: FontWeight.bold))),
+          Expanded(child: Text(value ?? 'N/A')),
+        ],
       ),
     );
   }
-
-
-  // edit button
-  Widget buildEditButton() => Builder(
-    builder: (context) => ElevatedButton(
-      child: const Text('Edit'),
-      onPressed: editInfo,
-    ),
-  );
-
-  // logpout button
-  Widget buildLogOutButton() => Builder(
-    builder: (context) => ElevatedButton(
-      child: const Text('Log Out'),
-      onPressed: logOut, // Call the logOut method here
-    ),
-  );
-
-
-
 }
 
-// Activities Container classs
+// Activities Container class
 class ActivitiesContainer extends StatelessWidget {
   final int joinedActivitiesCount;
   final int createdActivitiesCount;
@@ -203,7 +114,6 @@ class ActivitiesContainer extends StatelessWidget {
       ),
       child: Column(
         children: [
-          
           SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
