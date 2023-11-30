@@ -20,7 +20,18 @@ class DetailsPage extends StatefulWidget {
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
+// Method to check for pending requests
+Stream<bool> hasPendingRequests(String activityId) {
+  return FirebaseFirestore.instance
+      .collection('Activity')
+      .doc(activityId)
+      .snapshots()
+      .map((doc) => 
+          (doc.data()?['Requests'] as List<dynamic>? ?? []).isNotEmpty);
+}
+
 class _DetailsPageState extends State<DetailsPage> {
+  
   @override
   Widget build(BuildContext context) {
     final currUser = FirebaseAuth.instance.currentUser;
@@ -56,22 +67,48 @@ class _DetailsPageState extends State<DetailsPage> {
           print(Creator);
           print(categories.where(((category) => category.name == Category)));
 
-          var memberListButton = OutlinedButton(
-              child: Icon(
-                Icons.group,
-                size: 40,
-              ),
-              onPressed: () {
-                final isCreator = Creator == currUser?.uid;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MembersPage(
-                            isCreator: isCreator,
-                            activityId: widget.activityId,
-                          )),
-                );
-              });
+          // Update memberListButton with StreamBuilder
+          Widget memberListButton = StreamBuilder<bool>(
+            stream: hasPendingRequests(widget.activityId),
+            builder: (context, requestSnapshot) {
+              bool hasRequests = requestSnapshot.data ?? false;
+              return OutlinedButton(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(Icons.group, size: 40),
+                    if (hasRequests && Creator == currUser?.uid) // Show red dot if there are requests and the user is the creator
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 8,
+                            minHeight: 8,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                onPressed: () {
+                  final isCreator = Creator == currUser?.uid;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MembersPage(
+                              isCreator: isCreator,
+                              activityId: widget.activityId,
+                            )),
+                  );
+                },
+              );
+            },
+          );
 
           var requestJoinButton = OutlinedButton(
             child: Text('Request Group'),

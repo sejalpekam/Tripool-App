@@ -16,9 +16,25 @@ class MyActivityList extends StatefulWidget {
   @override
   State<MyActivityList> createState() => _MyActivityListState();
 }
+// Method to check for pending requests for each activity:
+Future<bool> hasPendingRequestsForActivity(String activityId) async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  final activityDoc = await FirebaseFirestore.instance
+      .collection('Activity')
+      .doc(activityId)
+      .get();
+  Map<String, dynamic> activityData = activityDoc.data() as Map<String, dynamic>;
+
+  // Check if the current user is the creator and if there are any pending requests
+  return currentUser?.uid == activityData['Creator'] &&
+      (activityData['Requests'] as List).isNotEmpty;
+}
+
 
 class _MyActivityListState extends State<MyActivityList> {
   User? user = FirebaseAuth.instance.currentUser;
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -107,21 +123,29 @@ class _MyActivityListState extends State<MyActivityList> {
                   builder: (context, appState, _) => SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
-                        for (final event in combinedEvents
-                            .where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetailsPage(activityId: event.id),
-                                  ),
-                                );
-                              });
+                        for (final event in combinedEvents.where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
+                          FutureBuilder<bool>(
+                            future: hasPendingRequestsForActivity(event.id),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                // Optionally, show a loader or placeholder widget here
+                                return Container(); // Placeholder widget
+                              }
+                              bool hasPendingRequests = snapshot.data ?? false;
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailsPage(activityId: event.id),
+                                      ),
+                                    );
+                                  });
+                                },
+                                child: EventWidget(event: event, hasPendingRequests: hasPendingRequests),
+                              );
                             },
-                            child: EventWidget(event: event),
                           ),
                       ],
                     ),
