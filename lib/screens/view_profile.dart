@@ -64,7 +64,7 @@ class _ViewProfileState extends State<ViewProfile> {
                     'https://example.com/profile-image.jpg',
                   ),
                 ),
-                SizedBox(height: 25),
+                SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -73,8 +73,11 @@ class _ViewProfileState extends State<ViewProfile> {
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            Text("Joined"),
-                            SizedBox(height: 15),
+                            Text(
+                              'Joined',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 8),
                             Text(
                               joinedActivitiesCount.toString(),
                             ),
@@ -82,14 +85,17 @@ class _ViewProfileState extends State<ViewProfile> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 20),
+                    SizedBox(width: 15),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            Text("Created"),
-                            SizedBox(height: 15),
+                            Text(
+                              'Created',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 8),
                             Text(
                               createdActivitiesCount.toString(),
                             ),
@@ -99,42 +105,100 @@ class _ViewProfileState extends State<ViewProfile> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 15),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text('Name: $name'),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Name:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(name),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 15),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text('Age: $age'),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Age:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8),
+                        Text(age),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 15),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text('Bio: $bio'),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Bio:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(bio),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 15),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text('Location: $location'),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Location:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(location),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 15),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text('Email: $email'),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Email:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(email),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 32),
+                SizedBox(height: 20),
               ],
             ),
           ),
