@@ -18,25 +18,6 @@ class ActivityList extends StatefulWidget {
 }
 
 class _ActivityListState extends State<ActivityList> {
-  final searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Start listening to changes.
-    searchController.addListener(search);
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    searchController.dispose();
-    super.dispose();
-  }
-
-  void search() {}
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -53,9 +34,7 @@ class _ActivityListState extends State<ActivityList> {
           return Text('No data found');
         }
 
-        List<Event> events = snapshot.data!.docs.where((doc) {
-          return doc['Activity_Name'].toString().contains("Dinner");
-        }).map((doc) {
+        List<Event> events = snapshot.data!.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
           DateTime FromDateTime = data['From'].toDate();
           DateTime ToDateTime = data['To'].toDate();
@@ -75,45 +54,39 @@ class _ActivityListState extends State<ActivityList> {
         }).toList();
 
         return Expanded(
-          child: Container(
-              margin: EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: searchController,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      hintText: 'Enter a search term',
-                      hintStyle: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  Consumer<AppState>(
-                      builder: (context, appState, _) => SingleChildScrollView(
-                            child: Column(children: <Widget>[
-                              for (final event in events.where((e) => e
-                                  .categoryIds
-                                  .contains(appState.selectedCategoryId)))
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              DetailsPage(activityId: event.id),
-                                        ),
-                                      );
-                                    });
-                                  },
-                                  child: EventWidget(event: event),
-                                )
-                            ]),
-                          )),
-                ],
-              )),
-        );
+            child: Container(
+          margin: EdgeInsets.all(10),
+          child: Consumer<AppState>(
+              builder: (context, appState, _) => SingleChildScrollView(
+                    child: Column(children: <Widget>[
+                      for (final event in events.where((e) =>
+                          e.categoryIds.contains(appState.selectedCategoryId) &&
+                          (e.title
+                                  .toLowerCase()
+                                  .contains(appState.search.toLowerCase()) ||
+                              e.location
+                                  .toLowerCase()
+                                  .contains(appState.search.toLowerCase()) ||
+                              e.description
+                                  .toLowerCase()
+                                  .contains(appState.search.toLowerCase()))))
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailsPage(activityId: event.id),
+                                ),
+                              );
+                            });
+                          },
+                          child: EventWidget(event: event),
+                        )
+                    ]),
+                  )),
+        ));
       },
     );
   }
