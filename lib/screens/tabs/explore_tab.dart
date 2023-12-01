@@ -90,10 +90,12 @@ class _ExploreTabState extends State<ExploreTab> {
                         //   ],
                         // ),
                         child: TextButton(
-                          child: Text('FAQ',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),),
+                          child: Text(
+                            'FAQ',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -114,7 +116,7 @@ class _ExploreTabState extends State<ExploreTab> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     child: Consumer<AppState>(
                       builder: (context, appState, _) => SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
