@@ -152,7 +152,7 @@ class _ExploreTabState extends State<ExploreTab> {
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
                         ),
-                        hintText: 'Enter a search term',
+                        hintText: 'Search an Activity',
                         hintStyle: TextStyle(color: Colors.white),
                       ),
                     ),

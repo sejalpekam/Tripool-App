@@ -449,7 +449,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                         Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                               0, 0, 0, 10),
-                                          child: Icon(Icons.person, size: 45),
+                                          child: Icon(Icons.person, size: 28),
                                         ),
                                         Text(Name,
                                             style: TextStyle(
