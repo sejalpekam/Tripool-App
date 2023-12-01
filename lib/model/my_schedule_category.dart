@@ -19,12 +19,12 @@ class myCategory {
 final AllmyCategory = myCategory(
   categoryId: 0,
   name: "All",
-  icon: Icons.search_off_rounded,
+  icon: Icons.search,
 );
 final CreatedCategory = myCategory(
   categoryId: 1,
   name: "Created",
-  icon: Icons.plus_one_rounded,
+  icon: Icons.create_new_folder_rounded,
 );
 
 //Entertainment won't fit, had to change category name to events
@@ -37,7 +37,7 @@ final JoinedCategory = myCategory(
 final RequestedCategory = myCategory(
   categoryId: 3,
   name: "Requested",
-  icon: Icons.request_page_rounded,
+  icon: Icons.pending_actions_rounded,
 );
 
 final mycategories = [
