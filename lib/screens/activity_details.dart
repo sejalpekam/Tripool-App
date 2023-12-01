@@ -147,7 +147,11 @@ class _DetailsPageState extends State<DetailsPage> {
             },
           );
 
-          var requestJoinButton = OutlinedButton(
+          var requestJoinButton = ElevatedButton(
+            style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue, // Background color
+             // Text color
+            ),
             child: Text('Request Group'),
             onPressed: () async {
               print('UID: ${currUser?.uid}');
@@ -231,7 +235,7 @@ class _DetailsPageState extends State<DetailsPage> {
           if (Members.contains(currUser?.uid)) {
             actionButtons = [
               memberListButton,
-              OutlinedButton(
+              ElevatedButton(
                   onPressed: () async {
                     // Notificaton part
                     final currentUser = FirebaseAuth.instance.currentUser;
@@ -266,7 +270,7 @@ class _DetailsPageState extends State<DetailsPage> {
           if (Creator == currUser?.uid) {
             actionButtons = [
               memberListButton,
-              OutlinedButton(
+              ElevatedButton(
                   child: Text('Edit Activity'),
                   onPressed: () {
                     Navigator.push(
