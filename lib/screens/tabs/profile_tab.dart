@@ -149,7 +149,7 @@ class _ProfileTabState extends State<ProfileTab> {
                   )
                 ],
               ),
-               SizedBox(height: 16),
+              SizedBox(height: 16),
               Container(
                   padding: EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
