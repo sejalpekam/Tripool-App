@@ -36,7 +36,7 @@ final JoinedCategory = myCategory(
 
 final RequestedCategory = myCategory(
   categoryId: 3,
-  name: "Requested",
+  name: "Pending",
   icon: Icons.pending_actions_rounded,
 );
 

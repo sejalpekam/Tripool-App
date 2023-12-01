@@ -47,7 +47,7 @@ class CategoryWidget extends StatelessWidget {
               size: 25,
             ),
             SizedBox(
-              height: 10,
+              height: 9,
             ),
             Text(
               category.name,

@@ -30,8 +30,8 @@ class myCategoryWidget extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        width: 90,
-        height: 90,
+        width: 72,
+        height: 72,
         decoration: BoxDecoration(
           border: Border.all(
               color: isSelected ? Colors.white : Color(0x99FFFFFF), width: 3),
@@ -44,10 +44,10 @@ class myCategoryWidget extends StatelessWidget {
             Icon(
               category.icon,
               color: isSelected ? Theme.of(context).primaryColor : Colors.white,
-              size: 40,
+              size: 25,
             ),
             SizedBox(
-              height: 10,
+              height: 9,
             ),
             Text(
               category.name,
