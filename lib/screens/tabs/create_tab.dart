@@ -8,7 +8,6 @@ List<String> categories = <String>[
   'Events',
   'Outdoor',
   'Sports',
-  'Trip',
   'Meetup',
   'Other'
 ];
