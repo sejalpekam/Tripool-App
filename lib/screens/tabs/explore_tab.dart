@@ -6,6 +6,7 @@ import 'package:tripool_app/backgrounds/explore_tab_background.dart';
 import 'package:tripool_app/model/category.dart';
 import 'package:tripool_app/model/event.dart';
 import 'package:tripool_app/screens/explore_activities_list.dart';
+import 'package:tripool_app/screens/faq.dart';
 import 'package:tripool_app/styleguide.dart';
 import 'package:tripool_app/screens/activity_details.dart';
 
@@ -29,22 +30,70 @@ class ExploreTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Text(
-                      "Find Activities",
-                      style: fadedTextStyle,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Text(
+                          "Find Activities",
+                          style: fadedTextStyle,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        // child: Column(
+                        //   children: [
+                        //     IconButton(
+                        //       icon: Icon(Icons.question_mark, color: Colors.white,),
+                        //       onPressed: () {
+                        //             Navigator.push(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) =>
+                        //                     FAQPage(),
+                        //               ),
+                        //             );
+                        //           },
+                        //     ),
+                        //     TextButton(child: Text('FAQ', style: TextStyle(color: Colors.white,)),onPressed: () {
+                        //             Navigator.push(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) =>
+                        //                     FAQPage(),
+                        //               ),
+                        //             );
+                        //           },),
+                        //   ],
+                        // ),
+                        child: TextButton(
+                          child: Text('FAQ',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FAQPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Text(
                       "Explore",
                       style: whiteHeadingTextStyle,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    padding: const EdgeInsets.only(top: 15),
                     child: Consumer<AppState>(
                       builder: (context, appState, _) => SingleChildScrollView(
                         scrollDirection: Axis.horizontal,

@@ -3,13 +3,13 @@ import 'package:tripool_app/styleguide.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_state.dart';
-import '../../model/category.dart';
+import '../../model/my_schedule_category.dart';
 
-class CategoryWidget extends StatelessWidget {
-  final Category category;
+class myCategoryWidget extends StatelessWidget {
+  final myCategory category;
   final bool selectable;
 
-  const CategoryWidget(
+  const myCategoryWidget(
       {Key? key, required this.category, this.selectable = true})
       : super(key: key);
 
@@ -30,8 +30,8 @@ class CategoryWidget extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        width: 72,
-        height: 72,
+        width: 90,
+        height: 90,
         decoration: BoxDecoration(
           border: Border.all(
               color: isSelected ? Colors.white : Color(0x99FFFFFF), width: 3),
@@ -44,7 +44,7 @@ class CategoryWidget extends StatelessWidget {
             Icon(
               category.icon,
               color: isSelected ? Theme.of(context).primaryColor : Colors.white,
-              size: 25,
+              size: 40,
             ),
             SizedBox(
               height: 10,

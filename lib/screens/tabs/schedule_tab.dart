@@ -22,12 +22,13 @@ import 'package:provider/provider.dart';
 import 'package:tripool_app/backgrounds/explore_tab_background.dart';
 import 'package:tripool_app/model/category.dart';
 import 'package:tripool_app/model/event.dart';
+import 'package:tripool_app/model/my_schedule_category.dart';
 import 'package:tripool_app/screens/myschedule_list.dart';
 import 'package:tripool_app/styleguide.dart';
 import 'package:tripool_app/screens/activity_details.dart';
 
 import '../../app_state.dart';
-import 'package:tripool_app/widgets/category_widget.dart';
+import 'package:tripool_app/widgets/my_category_widget.dart';
 import 'package:tripool_app/widgets/event_widget.dart';
 
 class ScheduleTab extends StatelessWidget {
@@ -57,14 +58,14 @@ class ScheduleTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Text(
                       "My Activities",
                       style: fadedTextStyle,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Text(
                       "Categories",
                       style: whiteHeadingTextStyle,
@@ -77,8 +78,8 @@ class ScheduleTab extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: <Widget>[
-                            for (final category in categories)
-                              CategoryWidget(category: category)
+                            for (final category in mycategories)
+                              myCategoryWidget(category: category)
                           ],
                         ),
                       ),
