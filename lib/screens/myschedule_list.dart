@@ -98,7 +98,10 @@ class _MyActivityListState extends State<MyActivityList> {
               );
             }).toList();
 
-            List<Event> combinedEvents = [...joined_events, ...requested_events];
+            List<Event> combinedEvents = [
+              ...joined_events,
+              ...requested_events
+            ];
 
             return Expanded(
               child: Container(
@@ -107,8 +110,18 @@ class _MyActivityListState extends State<MyActivityList> {
                   builder: (context, appState, _) => SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
-                        for (final event in combinedEvents
-                            .where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
+                        for (final event in combinedEvents.where((e) =>
+                            e.categoryIds
+                                .contains(appState.selectedCategoryId) &&
+                            (e.title
+                                    .toLowerCase()
+                                    .contains(appState.search.toLowerCase()) ||
+                                e.location
+                                    .toLowerCase()
+                                    .contains(appState.search.toLowerCase()) ||
+                                e.description
+                                    .toLowerCase()
+                                    .contains(appState.search.toLowerCase()))))
                           InkWell(
                             onTap: () {
                               setState(() {
