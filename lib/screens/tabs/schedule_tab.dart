@@ -77,7 +77,7 @@ class _ScheduleTabState extends State<ScheduleTab> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
                     child: Text(
-                      "Categories",
+                      "Schedule",
                       style: whiteHeadingTextStyle,
                     ),
                   ),
