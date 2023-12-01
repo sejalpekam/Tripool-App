@@ -20,7 +20,7 @@ class Category {
 final allCategory = Category(
   categoryId: 0,
   name: "All",
-  icon: Icons.search,
+  icon: Icons.travel_explore_rounded,
 );
 
 //Entertainment won't fit, had to change category name to events

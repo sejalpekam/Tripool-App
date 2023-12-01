@@ -19,7 +19,7 @@ class myCategory {
 final AllmyCategory = myCategory(
   categoryId: 0,
   name: "All",
-  icon: Icons.search,
+  icon: Icons.travel_explore_rounded,
 );
 final CreatedCategory = myCategory(
   categoryId: 1,

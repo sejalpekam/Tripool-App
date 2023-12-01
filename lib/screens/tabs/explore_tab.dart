@@ -90,10 +90,14 @@ class _ExploreTabState extends State<ExploreTab> {
                         //   ],
                         // ),
                         child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors
+                                .white, // Set the background color to white
+                          ),
                           child: Text(
                             'FAQ',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.blue, // Set the text color to blue
                             ),
                           ),
                           onPressed: () {
@@ -135,12 +139,19 @@ class _ExploreTabState extends State<ExploreTab> {
                       onChanged: appState.updateSearch,
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                        ),
                         border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         hintText: 'Enter a search term',
                         hintStyle: TextStyle(color: Colors.white),
                       ),

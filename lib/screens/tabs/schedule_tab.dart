@@ -101,12 +101,19 @@ class _ScheduleTabState extends State<ScheduleTab> {
                       onChanged: appState.updateSearch,
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                        ),
                         border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
                         hintText: 'Enter a search term',
                         hintStyle: TextStyle(color: Colors.white),
                       ),
