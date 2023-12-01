@@ -102,7 +102,7 @@ class _MembersPageState extends State<MembersPage> {
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () async {
-          await updateOrClearNotifications();
+          // await updateOrClearNotifications();
           Navigator.pop(context);
         },
       ),

@@ -79,6 +79,29 @@ class _DetailsPageState extends State<DetailsPage> {
           print(Creator);
           print(categories.where(((category) => category.name == Category)));
 
+          final currentUser = FirebaseAuth.instance.currentUser;
+
+          Future<void> updateOrClearNotifications() async {
+            final activityDocRef = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
+            final activitySnapshot = await activityDocRef.get();
+            final activityData = activitySnapshot.data();
+
+            if (currentUser?.uid == activityData?['Creator']) {
+              // If current user is the creator, clear specific notification arrays
+              await activityDocRef.update({
+                'Notif_Request': [],
+                'Notif_LeftActivity': [],
+              });
+            } else {
+              // If current user is a member but not the creator
+              await activityDocRef.update({
+                'Notif_AcceptedRequest': FieldValue.arrayRemove([currentUser?.uid]),
+                'Notif_RemovedMembers': FieldValue.arrayRemove([currentUser?.uid]),
+              });
+            }
+          }
+          
+
           // Update memberListButton with StreamBuilder
           Widget memberListButton = StreamBuilder<bool>(
             stream: hasNotifications(widget.activityId),
@@ -107,7 +130,9 @@ class _DetailsPageState extends State<DetailsPage> {
                       ),
                   ],
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  await updateOrClearNotifications();  // Clear or update notifications
+                  // Navigate to MembersPage or perform other actions
                   final isCreator = Creator == currUser?.uid;
                   Navigator.push(
                     context,
