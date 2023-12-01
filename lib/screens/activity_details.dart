@@ -107,7 +107,7 @@ class _DetailsPageState extends State<DetailsPage> {
             stream: hasNotifications(widget.activityId),
             builder: (context, requestSnapshot) {
              bool hasNotifications = requestSnapshot.data ?? false;
-              return OutlinedButton(
+              return ElevatedButton(
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
