@@ -34,7 +34,6 @@ class ExploreTab extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Text(
@@ -44,17 +43,44 @@ class ExploreTab extends StatelessWidget {
                       ),
                       Align(
                         alignment: Alignment.topRight,
-                        child: IconButton(
-                          icon: Icon(Icons.question_mark, color: Colors.white,),
-                          onPressed: () { 
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        FAQPage(),
-                                  ),
-                                );
-                              },
+                        // child: Column(
+                        //   children: [
+                        //     IconButton(
+                        //       icon: Icon(Icons.question_mark, color: Colors.white,),
+                        //       onPressed: () {
+                        //             Navigator.push(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) =>
+                        //                     FAQPage(),
+                        //               ),
+                        //             );
+                        //           },
+                        //     ),
+                        //     TextButton(child: Text('FAQ', style: TextStyle(color: Colors.white,)),onPressed: () {
+                        //             Navigator.push(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                 builder: (context) =>
+                        //                     FAQPage(),
+                        //               ),
+                        //             );
+                        //           },),
+                        //   ],
+                        // ),
+                        child: TextButton(
+                          child: Text('FAQ',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FAQPage(),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
