@@ -142,7 +142,11 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       'Members': [
         FirebaseAuth.instance.currentUser!.uid
       ], // Initialize as empty array
-      'Requests': [] // Initialize as empty array
+      'Requests': [], // Initialize as empty array
+      'Notif_Request': [],
+      'Notif_LeftActivity': [],
+      'Notif_AcceptedRequest': [],
+      'Notif_RemovedMembers': []
     });
     String ActivityId = docRef.id;
     await FirebaseFirestore.instance.collection('Users').doc(creatorId).update({

@@ -9,7 +9,8 @@ class Event {
       host,
       hostname,
       id;
-  final List categoryIds;
+
+  late final List categoryIds;
 
   Event(
       {required this.id,

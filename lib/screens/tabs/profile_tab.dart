@@ -102,22 +102,19 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
               ),
               SizedBox(height: 25),
-              // Display user details
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(10)),
+                  Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Text("Joined"),
-                          SizedBox(
-                            height: 15,
+                          Text(
+                            'Joined',
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          SizedBox(height: 8),
                           Text(
                             joinedActivitiesCount.toString(),
                           ),
@@ -125,92 +122,121 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(10)),
+                  SizedBox(width: 15),
+                  Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Text("Created"),
-                          SizedBox(
-                            height: 15,
+                          Text(
+                            'Created',
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          SizedBox(height: 8),
                           Text(
                             createdActivitiesCount.toString(),
                           ),
                         ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
-               SizedBox(height: 16),
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors
-                          .black, // You can customize the border color here
-                    ),
-                    borderRadius: BorderRadius.circular(
-                        8.0), // You can customize the border radius here
+              SizedBox(height: 15),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Name:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(nameController.text),
+                      ),
+                    ],
                   ),
-                  child: Text('Name: ${nameController.text}')),
-              SizedBox(height: 16),
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors
-                          .black, // You can customize the border color here
-                    ),
-                    borderRadius: BorderRadius.circular(
-                        8.0), // You can customize the border radius here
+                ),
+              ),
+              SizedBox(height: 15),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Age:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Text(ageController.text),
+                    ],
                   ),
-                  child: Text('Age: ${ageController.text}')),
-              SizedBox(height: 16),
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors
-                          .black, // You can customize the border color here
-                    ),
-                    borderRadius: BorderRadius.circular(
-                        8.0), // You can customize the border radius here
+                ),
+              ),
+              SizedBox(height: 15),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bio:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(bioController.text),
+                      ),
+                    ],
                   ),
-                  child: Text('Bio: ${bioController.text}')),
-              SizedBox(height: 16),
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors
-                          .black, // You can customize the border color here
-                    ),
-                    borderRadius: BorderRadius.circular(
-                        8.0), // You can customize the border radius here
+                ),
+              ),
+              SizedBox(height: 15),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Location:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(locationController.text),
+                      ),
+                    ],
                   ),
-                  child: Text('Location: ${locationController.text}')),
-              SizedBox(height: 16),
-              Container(
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors
-                          .black, // You can customize the border color here
-                    ),
-                    borderRadius: BorderRadius.circular(
-                        8.0), // You can customize the border radius here
+                ),
+              ),
+              SizedBox(height: 15),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Email:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(FirebaseAuth.instance.currentUser?.email ?? ''),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                      'Email: ${FirebaseAuth.instance.currentUser?.email}')),
-              SizedBox(height: 32),
+                ),
+              ),
+              SizedBox(height: 20),
+
               // Edit button to update profile
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

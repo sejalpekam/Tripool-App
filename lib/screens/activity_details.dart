@@ -56,10 +56,14 @@ class _DetailsPageState extends State<DetailsPage> {
           print(Creator);
           print(categories.where(((category) => category.name == Category)));
 
-          var memberListButton = OutlinedButton(
+          var memberListButton = ElevatedButton(
+              style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue, // Background color
+              ),
               child: Icon(
                 Icons.group,
                 size: 40,
+                color: Colors.white
               ),
               onPressed: () {
                 final isCreator = Creator == currUser?.uid;
@@ -73,7 +77,11 @@ class _DetailsPageState extends State<DetailsPage> {
                 );
               });
 
-          var requestJoinButton = OutlinedButton(
+          var requestJoinButton = ElevatedButton(
+            style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue, // Background color
+             // Text color
+            ),
             child: Text('Request Group'),
             onPressed: () async {
               print('UID: ${currUser?.uid}');
@@ -101,7 +109,7 @@ class _DetailsPageState extends State<DetailsPage> {
           if (Requests.contains(currUser?.uid)) {
             actionButtons = [
               memberListButton,
-              OutlinedButton(
+              ElevatedButton(
                   onPressed: () async {
                     final userDoc = FirebaseFirestore.instance
                         .collection('Users')
@@ -126,7 +134,7 @@ class _DetailsPageState extends State<DetailsPage> {
           if (Members.contains(currUser?.uid)) {
             actionButtons = [
               memberListButton,
-              OutlinedButton(
+              ElevatedButton(
                   onPressed: () async {
                     final userDoc = FirebaseFirestore.instance
                         .collection('Users')
@@ -151,7 +159,7 @@ class _DetailsPageState extends State<DetailsPage> {
           if (Creator == currUser?.uid) {
             actionButtons = [
               memberListButton,
-              OutlinedButton(
+              ElevatedButton(
                   child: Text('Edit Activity'),
                   onPressed: () {
                     Navigator.push(
