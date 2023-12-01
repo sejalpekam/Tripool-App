@@ -34,15 +34,33 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
       ProfileTab(),
     ];
   }
-   Stream<bool> hasPendingRequests() {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    return FirebaseFirestore.instance
-      .collection('Activity')
-      .where('Creator', isEqualTo: currentUser?.uid)
-      .snapshots()
-      .map((snapshot) => 
-        snapshot.docs.any((doc) => (doc.data()['Requests'] as List).isNotEmpty));
-  }
+  //  Stream<bool> hasPendingRequests() {
+  //   final currentUser = FirebaseAuth.instance.currentUser;
+  //   return FirebaseFirestore.instance
+  //     .collection('Activity')
+  //     .where('Creator', isEqualTo: currentUser?.uid)
+  //     .snapshots()
+  //     .map((snapshot) => 
+  //       snapshot.docs.any((doc) => (doc.data()['Requests'] as List).isNotEmpty));
+  // }
+
+  // Stream to check for pending requests ,left activity notifications, accpted request and rejected request
+  Stream<bool> hasNotifications() {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  return FirebaseFirestore.instance
+    .collection('Activity')
+    .snapshots()
+    .map((snapshot) => snapshot.docs.any((doc) {
+      final data = doc.data();
+      final notifRequest = data['Notif_Request'] as List<dynamic>? ?? [];
+      final notifLeftActivity = data['Notif_LeftActivity'] as List<dynamic>? ?? [];
+      final notifAcceptedRequest = data['Notif_AcceptedRequest'] as List<dynamic>? ?? [];
+      final notifRemoveMembers = data['Notif_RemovedMembers'] as List<dynamic>? ?? [];
+      bool isCurrentUserInvolved = notifAcceptedRequest.contains(currentUser?.uid) || notifRemoveMembers.contains(currentUser?.uid);
+      return isCurrentUserInvolved || (currentUser?.uid == data['Creator'] && (notifRequest.isNotEmpty || notifLeftActivity.isNotEmpty));
+    }));
+}
+
 
  List<PersistentBottomNavBarItem> _navBarItems(bool showIndicator) {
     // find if the user's created group has request
@@ -106,7 +124,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
     return Scaffold(
       appBar: AppBar(),
       bottomNavigationBar: StreamBuilder<bool>(
-        stream: hasPendingRequests(),
+        stream:hasNotifications(),
         builder: (context, snapshot) {
           return PersistentTabView(
             context,

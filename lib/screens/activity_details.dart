@@ -20,15 +20,27 @@ class DetailsPage extends StatefulWidget {
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
-// Method to check for pending requests
-Stream<bool> hasPendingRequests(String activityId) {
+// Method to check for pending requests, for notification arrays
+Stream<bool> hasNotifications(String activityId) {
+  final currentUser = FirebaseAuth.instance.currentUser;
   return FirebaseFirestore.instance
       .collection('Activity')
       .doc(activityId)
       .snapshots()
-      .map((doc) => 
-          (doc.data()?['Requests'] as List<dynamic>? ?? []).isNotEmpty);
+      .map((doc) {
+        final data = doc.data();
+        bool isCreator = currentUser?.uid == data?['Creator'];
+        bool inNotifAcceptRequest = (data?['Notif_AcceptedRequest'] as List<dynamic>? ?? []).contains(currentUser?.uid);
+        bool inNotifRemovedMembers = (data?['Notif_RemovedMembers'] as List<dynamic>? ?? []).contains(currentUser?.uid);
+        bool inNotifRequests = (data?['Notif_Request'] as List<dynamic>? ?? []).isNotEmpty;
+        bool inNotifLeftActivity = (data?['Notif_LeftActivity'] as List<dynamic>? ?? []).isNotEmpty;
+
+        return (isCreator && (inNotifRequests || inNotifLeftActivity)) ||
+               (!isCreator && (inNotifAcceptRequest || inNotifRemovedMembers));
+      });
 }
+
+
 
 class _DetailsPageState extends State<DetailsPage> {
   
@@ -69,15 +81,15 @@ class _DetailsPageState extends State<DetailsPage> {
 
           // Update memberListButton with StreamBuilder
           Widget memberListButton = StreamBuilder<bool>(
-            stream: hasPendingRequests(widget.activityId),
+            stream: hasNotifications(widget.activityId),
             builder: (context, requestSnapshot) {
-              bool hasRequests = requestSnapshot.data ?? false;
+             bool hasNotifications = requestSnapshot.data ?? false;
               return OutlinedButton(
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
                     Icon(Icons.group, size: 40),
-                    if (hasRequests && Creator == currUser?.uid) // Show red dot if there are requests and the user is the creator
+                    if (hasNotifications) // Show red dot if there are requests and the user is the creator
                       Positioned(
                         right: 0,
                         top: 0,
@@ -114,24 +126,32 @@ class _DetailsPageState extends State<DetailsPage> {
             child: Text('Request Group'),
             onPressed: () async {
               print('UID: ${currUser?.uid}');
-              final userDoc = FirebaseFirestore.instance
-                  .collection('Users')
-                  .doc(currUser!.uid);
+              final userDoc = FirebaseFirestore.instance.collection('Users').doc(currUser!.uid);
+              final activityDoc = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
+
               final user = await userDoc.get();
+              final activity = await activityDoc.get();
+
+              // Update the User's Requested_Activities
               await userDoc.update({
                 'Requested_Activities': [
                   ...user.get('Requested_Activities'),
                   widget.activityId
                 ]
               });
-              await FirebaseFirestore.instance
-                  .collection('Activity')
-                  .doc(widget.activityId)
-                  .update({
-                'Requests': [...Requests, currUser.uid]
+
+              // Update the Activity's Requests
+              await activityDoc.update({
+                'Requests': FieldValue.arrayUnion([currUser.uid])
+              });
+
+              // Also update the Notif_Request array in the Activity document
+              await activityDoc.update({
+                'Notif_Request': FieldValue.arrayUnion([currUser.uid])
               });
             },
           );
+
 
           var actionButtons = [memberListButton, requestJoinButton];
 
@@ -139,24 +159,47 @@ class _DetailsPageState extends State<DetailsPage> {
             actionButtons = [
               memberListButton,
               OutlinedButton(
-                  onPressed: () async {
-                    final userDoc = FirebaseFirestore.instance
-                        .collection('Users')
-                        .doc(currUser!.uid);
-                    final user = await userDoc.get();
-                    await userDoc.update({
-                      'Requested_Activities':
-                          (user.get('Requested_Activities') as List<dynamic>)
-                              .where((req) => req != widget.activityId),
-                    });
-                    await FirebaseFirestore.instance
-                        .collection('Activity')
-                        .doc(widget.activityId)
-                        .update({
-                      'Requests': (Requests).where((req) => req != currUser.uid)
-                    });
-                  },
-                  child: Text('Withdraw Request'))
+  onPressed: () async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userDocRef = FirebaseFirestore.instance.collection('Users').doc(currentUser!.uid);
+    final activityDocRef = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
+
+    final user = await userDocRef.get();
+    final activity = await activityDocRef.get();
+    List<dynamic> members = activity.get('Members') as List<dynamic>;
+    List<dynamic> notifRequests = activity.get('Notif_Request') as List<dynamic>;
+
+    // Update Notif_LeftActivity if the user is a member of the activity
+    if (members.contains(currentUser.uid)) {
+      await activityDocRef.update({
+        'Notif_LeftActivity': FieldValue.arrayUnion([currentUser.uid])
+      });
+    }
+
+    // Remove user from Requested_Activities
+    await userDocRef.update({
+      'Requested_Activities': (user.get('Requested_Activities') as List<dynamic>).where((req) => req != widget.activityId).toList(),
+    });
+
+    // Remove user from Activity's Requests
+    await activityDocRef.update({
+      'Requests': (activity.get('Requests') as List<dynamic>).where((req) => req != currentUser.uid).toList(),
+    });
+
+    
+
+    // Update Notif_Request if the user is in Notif_Request
+    if (notifRequests.contains(currentUser.uid)) {
+      await activityDocRef.update({
+        'Notif_Request': FieldValue.arrayRemove([currentUser.uid])
+      });
+    }
+  },
+  child: Text('Withdraw Request')
+)
+
+
+
             ];
           }
 
@@ -165,6 +208,11 @@ class _DetailsPageState extends State<DetailsPage> {
               memberListButton,
               OutlinedButton(
                   onPressed: () async {
+                    // Notificaton part
+                    final currentUser = FirebaseAuth.instance.currentUser;
+                    final activityDocRef = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
+                    // Notificaton part
+
                     final userDoc = FirebaseFirestore.instance
                         .collection('Users')
                         .doc(currUser!.uid);
@@ -179,6 +227,11 @@ class _DetailsPageState extends State<DetailsPage> {
                         .doc(widget.activityId)
                         .update({
                       'Members': (Members).where((req) => req != currUser.uid)
+                    });
+
+                    // Notificaton: insert to Notif_LeftActivity
+                     await activityDocRef.update({
+                      'Notif_LeftActivity': FieldValue.arrayUnion([currentUser?.uid])
                     });
                   },
                   child: Text('Leave Group'))

@@ -56,7 +56,6 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
     String activityDestination = _activityDestinationController.text.trim();
     String category = dropdownValue;
     String? creatorId = user?.uid;
-
     // Combine date and time for start and end
     DateTime? combinedStartDate = combineDateTime(startdate, starttime);
     DateTime? combinedEndDate = combineDateTime(enddate, endtime);
@@ -130,7 +129,8 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       String category,
       String creatorId,
       String userName) async {
-    DocumentReference docRef = await FirebaseFirestore.instance.collection('Activity').add({
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('Activity').add({
       'Activity_Description': activityDescription,
       'Activity_Name': activityTitle,
       'Category': category,
@@ -142,19 +142,16 @@ class _CreateActivityTabState extends State<CreateActivityTab> {
       'Members': [
         FirebaseAuth.instance.currentUser!.uid
       ], // Initialize as empty array
-      'Requests': [] // Initialize as empty array
+      'Requests': [], // Initialize as empty array
+      'Notif_Request': [],
+      'Notif_LeftActivity': [],
+      'Notif_AcceptedRequest': [],
+      'Notif_RemovedMembers': []
     });
-    // final currUser = FirebaseAuth.instance.currentUser;
-    // final userDoc = FirebaseFirestore.instance
-    //               .collection('Users')
-    //               .doc(currUser!.uid);
-    //           final user = await userDoc.get();
-    // await userDoc.update({
-    //             'Created_Activities': [
-    //               ...user!.get('Created_Activities'),
-    //               docRef.id
-    //             ]
-    //           });
+    String ActivityId = docRef.id;
+    await FirebaseFirestore.instance.collection('Users').doc(creatorId).update({
+      'Created_Activities': FieldValue.arrayUnion([ActivityId])
+    });
   }
 
   final _formKey = GlobalKey<FormState>();

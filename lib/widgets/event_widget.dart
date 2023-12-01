@@ -5,9 +5,9 @@ import '../../model/event.dart';
 
 class EventWidget extends StatelessWidget {
   final Event event;
-  final bool hasPendingRequests;
+  final bool hasNotifications;
 
-  const EventWidget({Key? key, required this.event, this.hasPendingRequests = false}) : super(key: key);
+  const EventWidget({Key? key, required this.event, this.hasNotifications = false}) : super(key: key);
 
 
   @override
@@ -102,7 +102,7 @@ class EventWidget extends StatelessWidget {
       ),
     ),
     // red dot
-      if (hasPendingRequests)
+      if (hasNotifications)
         Positioned(
           right: 5,
           top: 20,
