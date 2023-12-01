@@ -76,25 +76,25 @@ class _MembersPageState extends State<MembersPage> {
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
 
-    Future<void> updateOrClearNotifications() async {
-      final activityDocRef = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
-      final activitySnapshot = await activityDocRef.get();
-      final activityData = activitySnapshot.data();
+    // Future<void> updateOrClearNotifications() async {
+    //   final activityDocRef = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
+    //   final activitySnapshot = await activityDocRef.get();
+    //   final activityData = activitySnapshot.data();
 
-      if (currentUser?.uid == activityData?['Creator']) {
-        // If current user is the creator, clear specific notification arrays
-        await activityDocRef.update({
-          'Notif_Request': [],
-          'Notif_LeftActivity': [],
-        });
-      } else {
-        // If current user is a member but not the creator
-        await activityDocRef.update({
-          'Notif_AcceptedRequest': FieldValue.arrayRemove([currentUser?.uid]),
-          'Notif_RemovedMembers': FieldValue.arrayRemove([currentUser?.uid]),
-        });
-      }
-    }
+    //   if (currentUser?.uid == activityData?['Creator']) {
+    //     // If current user is the creator, clear specific notification arrays
+    //     await activityDocRef.update({
+    //       'Notif_Request': [],
+    //       'Notif_LeftActivity': [],
+    //     });
+    //   } else {
+    //     // If current user is a member but not the creator
+    //     await activityDocRef.update({
+    //       'Notif_AcceptedRequest': FieldValue.arrayRemove([currentUser?.uid]),
+    //       'Notif_RemovedMembers': FieldValue.arrayRemove([currentUser?.uid]),
+    //     });
+    //   }
+    // }
 
     return Scaffold(
       appBar: AppBar(

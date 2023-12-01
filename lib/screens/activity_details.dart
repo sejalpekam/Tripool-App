@@ -131,7 +131,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   ],
                 ),
                 onPressed: () async {
-                  await updateOrClearNotifications();  // Clear or update notifications
+                  // await updateOrClearNotifications();  
                   // Navigate to MembersPage or perform other actions
                   final isCreator = Creator == currUser?.uid;
                   Navigator.push(
@@ -142,6 +142,7 @@ class _DetailsPageState extends State<DetailsPage> {
                               activityId: widget.activityId,
                             )),
                   );
+                  await updateOrClearNotifications(); // Clear or update notifications
                 },
               );
             },
