@@ -14,6 +14,7 @@
 //   }
 // }
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,16 @@ import 'package:tripool_app/widgets/my_category_widget.dart';
 import 'package:tripool_app/widgets/event_widget.dart';
 
 class ScheduleTab extends StatelessWidget {
+  Stream<List<DocumentSnapshot>> streamJoinRequests(String creatorId) {
+  return FirebaseFirestore.instance
+    .collection('Activity')
+    .where('Creator', isEqualTo: creatorId)
+    .snapshots()
+    .map((snapshot) => 
+      snapshot.docs.where((doc) => (doc.data()['Requests'] as List).isNotEmpty).toList()
+    );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

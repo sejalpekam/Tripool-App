@@ -16,9 +16,30 @@ class MyActivityList extends StatefulWidget {
   @override
   State<MyActivityList> createState() => _MyActivityListState();
 }
+Future<bool> hasNotifications(String activityId) async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  final activityDoc = await FirebaseFirestore.instance
+      .collection('Activity')
+      .doc(activityId)
+      .get();
+  Map<String, dynamic> activityData = activityDoc.data() as Map<String, dynamic>;
+
+  // Check if the current user is the creator and if there are any notifications
+  bool isCreator = currentUser?.uid == activityData['Creator'];
+  bool inNotifAcceptRequest = (activityData['Notif_AcceptedRequest'] as List).contains(currentUser?.uid);
+  bool inNotifRemovedMembers = (activityData['Notif_RemovedMembers'] as List).contains(currentUser?.uid);
+  
+  return (!isCreator && (inNotifAcceptRequest || inNotifRemovedMembers)) ||
+         (isCreator && ((activityData['Notif_Request'] as List).isNotEmpty || (activityData['Notif_LeftActivity'] as List).isNotEmpty));
+}
+
+
+
 
 class _MyActivityListState extends State<MyActivityList> {
   User? user = FirebaseAuth.instance.currentUser;
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -143,33 +164,42 @@ class _MyActivityListState extends State<MyActivityList> {
                   ...requestedEvents,
                 ];
 
-                return Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    child: Consumer<AppState>(
-                      builder: (context, appState, _) => SingleChildScrollView(
-                        child: Column(
-                          children: <Widget>[
-                            for (final event in combinedEvents.where((e) => e
-                                .categoryIds
-                                .contains(appState.selectedCategoryId)))
-                              InkWell(
+            List<Event> combinedEvents = [...joined_events, ...requested_events];
+
+            return Expanded(
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Consumer<AppState>(
+                  builder: (context, appState, _) => SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        for (final event in combinedEvents.where((e) => e.categoryIds.contains(appState.selectedCategoryId)))
+                          FutureBuilder<bool>(
+                            future:  hasNotifications(event.id),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                // Optionally, show a loader or placeholder widget here
+                                return Container(); // Placeholder widget
+                              }
+                              bool hasNotifications = snapshot.data ?? false;
+                              return InkWell(
+
                                 onTap: () {
                                   setState(() {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            DetailsPage(activityId: event.id),
+
+                                        builder: (context) => DetailsPage(activityId: event.id),
                                       ),
                                     );
                                   });
                                 },
-                                child: EventWidget(event: event),
-                              ),
-                          ],
-                        ),
-                      ),
+                                child: EventWidget(event: event, hasNotifications: hasNotifications),
+                              );
+                            },
+                          ),
+
                     ),
                   ),
                 );

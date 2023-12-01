@@ -5,12 +5,16 @@ import '../../model/event.dart';
 
 class EventWidget extends StatelessWidget {
   final Event event;
+  final bool hasNotifications;
 
-  const EventWidget({Key? key, required this.event}) : super(key: key);
+  const EventWidget({Key? key, required this.event, this.hasNotifications = false}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Stack(
+    children: [
+     Card(
       margin: const EdgeInsets.symmetric(vertical: 20),
       elevation: 4,
       color: Colors.white,
@@ -96,6 +100,22 @@ class EventWidget extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+    // red dot
+      if (hasNotifications)
+        Positioned(
+          right: 5,
+          top: 20,
+          child: Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+    ],
+  );
+    
   }
 }

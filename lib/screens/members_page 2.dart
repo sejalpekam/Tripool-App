@@ -64,49 +64,18 @@ class _MembersPageState extends State<MembersPage> {
     super.initState();
   }
 
-  Future<void> clearNotifications() async {
-    await _firestore.collection('Activity').doc(widget.activityId).update({
-      'Notif_Request': [],
-      'Notif_LeftActivity': [],
-    });
-  }
-
-
   @override
   Widget build(BuildContext context) {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    // Future<void> updateOrClearNotifications() async {
-    //   final activityDocRef = FirebaseFirestore.instance.collection('Activity').doc(widget.activityId);
-    //   final activitySnapshot = await activityDocRef.get();
-    //   final activityData = activitySnapshot.data();
-
-    //   if (currentUser?.uid == activityData?['Creator']) {
-    //     // If current user is the creator, clear specific notification arrays
-    //     await activityDocRef.update({
-    //       'Notif_Request': [],
-    //       'Notif_LeftActivity': [],
-    //     });
-    //   } else {
-    //     // If current user is a member but not the creator
-    //     await activityDocRef.update({
-    //       'Notif_AcceptedRequest': FieldValue.arrayRemove([currentUser?.uid]),
-    //       'Notif_RemovedMembers': FieldValue.arrayRemove([currentUser?.uid]),
-    //     });
-    //   }
-    // }
-
     return Scaffold(
       appBar: AppBar(
-      title: Text('Members Page'),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () async {
-          // await updateOrClearNotifications();
-          Navigator.pop(context);
-        },
+        title: Text('Members Page'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-    ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -200,36 +169,104 @@ class _MembersPageState extends State<MembersPage> {
                                                 Row(
                                                   children: [
                                                     ElevatedButton(
-                                                        onPressed: () async {
-                                                          final userDoc = FirebaseFirestore.instance.collection('Users').doc(snapshot.data!.id);
+                                                      onPressed: () async {
+                                                        final userDoc =
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'Users')
+                                                                .doc(snapshot
+                                                                    .data!.id);
 
-                                                          // Accept the request
-                                                          await userDoc.update({
-                                                            'Requested_Activities': (userData['Requested_Activities'] as List<dynamic>).where((req) => req != widget.activityId),
-                                                          });
-                                                          await userDoc.update({
-                                                            'Joined_Activities': [...(userData['Joined_Activities'] as List<dynamic>), widget.activityId],
-                                                          });
-                                                          await FirebaseFirestore.instance.collection('Activity').doc(widget.activityId).update({
-                                                            'Requests': (activityData['Requests'] as List<dynamic>).where((req) => req != snapshot.data!.id),
-                                                            'Members': [...(activityData['Members'] as List<dynamic>), snapshot.data!.id],
-                                                            'Notif_AcceptedRequest': FieldValue.arrayUnion([snapshot.data!.id]), // Add member to Notif_AcceptedRequest
-                                                          });
-                                                        },
-                                                        child: Text('Accept'),
-                                                      ),
+                                                        await userDoc.update({
+                                                          'Requested_Activities':
+                                                              (userData['Requested_Activities']
+                                                                      as List<
+                                                                          dynamic>)
+                                                                  .where((req) =>
+                                                                      req !=
+                                                                      widget
+                                                                          .activityId),
+                                                        });
+                                                        await userDoc.update({
+                                                          'Joined_Activities': [
+                                                            ...(userData[
+                                                                    'Joined_Activities']
+                                                                as List<
+                                                                    dynamic>),
+                                                            widget.activityId
+                                                          ],
+                                                        });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'Activity')
+                                                            .doc(widget
+                                                                .activityId)
+                                                            .update({
+                                                          'Requests': (activityData[
+                                                                      'Requests']
+                                                                  as List<
+                                                                      dynamic>)
+                                                              .where((req) =>
+                                                                  req !=
+                                                                  snapshot
+                                                                      .data!.id)
+                                                        });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'Activity')
+                                                            .doc(widget
+                                                                .activityId)
+                                                            .update({
+                                                          'Members': [
+                                                            ...(activityData[
+                                                                    'Members']
+                                                                as List<
+                                                                    dynamic>),
+                                                            snapshot.data!.id
+                                                          ]
+                                                        });
+                                                      },
+                                                      child: Text('Accept'),
+                                                    ),
                                                     SizedBox(width: 8),
                                                     ElevatedButton(
                                                       onPressed: () async {
-                                                        final userDoc = FirebaseFirestore.instance.collection('Users').doc(snapshot.data!.id);
+                                                        final userDoc =
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'Users')
+                                                                .doc(snapshot
+                                                                    .data!.id);
 
-                                                        // Reject the request
                                                         await userDoc.update({
-                                                          'Requested_Activities': (userData['Requested_Activities'] as List<dynamic>).where((req) => req != widget.activityId),
+                                                          'Requested_Activities':
+                                                              (userData['Requested_Activities']
+                                                                      as List<
+                                                                          dynamic>)
+                                                                  .where((req) =>
+                                                                      req !=
+                                                                      widget
+                                                                          .activityId),
                                                         });
-                                                        await FirebaseFirestore.instance.collection('Activity').doc(widget.activityId).update({
-                                                          'Requests': (activityData['Requests'] as List<dynamic>).where((req) => req != snapshot.data!.id),
-                                                          'Notif_RemovedMembers': FieldValue.arrayUnion([snapshot.data!.id]), // Add member to Notif_RemovedMembers
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                'Activity')
+                                                            .doc(widget
+                                                                .activityId)
+                                                            .update({
+                                                          'Requests': (activityData[
+                                                                      'Requests']
+                                                                  as List<
+                                                                      dynamic>)
+                                                              .where((req) =>
+                                                                  req !=
+                                                                  snapshot
+                                                                      .data!.id)
                                                         });
                                                       },
                                                       child: Text('Reject'),
