@@ -30,7 +30,28 @@ import '../../app_state.dart';
 import 'package:tripool_app/widgets/my_category_widget.dart';
 import 'package:tripool_app/widgets/event_widget.dart';
 
-class ScheduleTab extends StatelessWidget {
+class ScheduleTab extends StatefulWidget {
+  const ScheduleTab({super.key});
+
+  @override
+  State<ScheduleTab> createState() => _ScheduleTabState();
+}
+
+class _ScheduleTabState extends State<ScheduleTab> {
+  late TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +92,23 @@ class ScheduleTab extends StatelessWidget {
                               myCategoryWidget(category: category)
                           ],
                         ),
+                      ),
+                    ),
+                  ),
+                  Consumer<AppState>(
+                    builder: (context, appState, _) => TextField(
+                      controller: searchController,
+                      onChanged: appState.updateSearch,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                        hintText: 'Enter a search term',
+                        hintStyle: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
